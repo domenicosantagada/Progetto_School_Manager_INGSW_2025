@@ -1,0 +1,52 @@
+/* Background generale */
+.root {
+    -fx-background-color: #F5F0CD; /* Colore di sfondo principale */
+  -fx-background-color: linear-gradient(to bottom, #FFFDE7, #FFF59D);
+    -fx-font-family: "Helvetica";
+}
+
+.label {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/*#logoView{
+    *//*Aggiungo un padding all'immagine *//*
+    -fx-padding: 10px 0px 10px 0px;
+}*/
+
+#leftPanel {
+    -fx-background-color: #B1F0F7; /* Colore di sfondo lato sinistro */
+     -fx-background-color: linear-gradient(to bottom, #E3F2FD, #90CAF9);
+}
+
+#rightPanel {
+    -fx-background-color: #FFFFFF; /* Colore di sfondo lato destro */
+    -fx-padding: 10px 50px; /* Spaziatura interna, 10px sopra e sotto, 20px a destra e sinistra */
+}
+
+/*per modidifare tutti i texFiled contemporaneamente */
+.text-field {
+-fx-font-size: 15px;
+-fx-background-color: transparent;
+-fx-border-color: #1976D2; -fx-border-width: 0px 0px 2px 0px;
+}
+
+#registerButton{
+-fx-background-color: #FADA7A; /* Colore di sfondo del bottone */
+    -fx-text-fill: #1976D2; /* Colore del testo */
+    -fx-font-size: 15px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+}
+
+#registerButton:hover{
+    -fx-background-color: #F5D34A;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}

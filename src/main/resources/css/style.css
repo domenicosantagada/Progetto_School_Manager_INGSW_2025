@@ -1,0 +1,26 @@
+/* Calendario Griglia */
+.calendar-griglia {
+    -fx-border-color: black;
+    -fx-grid-lines-visible: true; /* Mostra le linee della griglia */
+   /*setto lo stile helvetica bold*/
+    -fx-font-family: "Helvetica";
+    -fx-font-weight: bold;
+}
+
+/* Righe e colonne della griglia */
+.calendar-griglia .column-header,
+.calendar-griglia .row-header {
+    -fx-background-color: #f4f4f4;
+
+}
+
+/* Etichetta dentro le celle senza bordi */
+.calendar-griglia .cell {
+    -fx-border-color: transparent;
+}
+
+/* Celle per assenze */
+.calendar-griglia .assenza,
+.calendar-griglia .absent {
+    -fx-background-color: #FF0000;
+}

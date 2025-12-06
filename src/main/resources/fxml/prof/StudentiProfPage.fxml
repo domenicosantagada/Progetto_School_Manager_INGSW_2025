@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<StackPane prefHeight="760.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/21.0.1"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.prof.StudentiController">
+
+    <stylesheets>
+        <URL value="@../../css/assenze.css"/>
+    </stylesheets>
+
+    <children>
+        <BorderPane fx:id="mainPane" prefHeight="760.0" prefWidth="1050.0" StackPane.alignment="CENTER">
+            <center>
+                <VBox alignment="CENTER" prefHeight="539.0" prefWidth="1032.0" spacing="20.0"
+                      BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <FontAwesomeIcon fx:id="pdfIcon" fill="#1976D2" iconName="FILE_PDF_ALT" size="26"
+                                                 onMouseClicked="#exportPDF"/>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                              minWidth="-Infinity" prefHeight="120.0" prefWidth="800.0" spacing="80.0">
+                            <children>
+                                <BorderPane styleClass="box" prefHeight="200.0" prefWidth="200.0"
+                                            style="-fx-background-color: #aad8d3;">
+                                    <bottom>
+                                        <Label text="Totale studenti" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="15.0"/>
+                                            </font>
+                                            <graphic>
+                                                <FontAwesomeIcon fill="#1976D2" iconName="GROUP" size="20"/>
+                                            </graphic>
+                                            <BorderPane.margin>
+                                                <Insets bottom="10.0"/>
+                                            </BorderPane.margin>
+                                        </Label>
+                                    </bottom>
+                                    <center>
+                                        <Label fx:id="totalStudentsLabel" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="40.0"/>
+                                            </font>
+                                        </Label>
+                                    </center>
+                                </BorderPane>
+                                <BorderPane styleClass="box" prefHeight="200.0" prefWidth="200.0"
+                                            style="-fx-background-color: #f55c47;">
+                                    <bottom>
+                                        <Label text="Insufficienze" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="15.0"/>
+                                            </font>
+                                            <graphic>
+                                                <FontAwesomeIcon fill="#1976D2" iconName="CLOSE" size="20"/>
+                                            </graphic>
+                                            <BorderPane.margin>
+                                                <Insets bottom="10.0"/>
+                                            </BorderPane.margin>
+                                        </Label>
+                                    </bottom>
+                                    <center>
+                                        <Label fx:id="insufficientLabel" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="40.0"/>
+                                            </font>
+                                        </Label>
+                                    </center>
+                                </BorderPane>
+                                <BorderPane styleClass="box" prefHeight="200.0" prefWidth="200.0"
+                                            style="-fx-background-color: #9fe6a0;">
+                                    <bottom>
+                                        <Label text="Sufficienze" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="15.0"/>
+                                            </font>
+                                            <graphic>
+                                                <FontAwesomeIcon fill="#1976D2" iconName="CHECK" size="20"/>
+                                            </graphic>
+                                            <BorderPane.margin>
+                                                <Insets bottom="10.0"/>
+                                            </BorderPane.margin>
+                                        </Label>
+                                    </bottom>
+                                    <center>
+                                        <Label fx:id="sufficientLabel" BorderPane.alignment="CENTER">
+                                            <font>
+                                                <Font size="40.0"/>
+                                            </font>
+                                        </Label>
+                                    </center>
+                                </BorderPane>
+                            </children>
+                        </HBox>
+                        <TableView fx:id="studentiTableView" styleClass="tabella" prefWidth="1030.0">
+                            <columns>
+                                <TableColumn fx:id="surnameColumn" prefWidth="180.0" text="Cognome"/>
+                                <TableColumn fx:id="nameColumn" prefWidth="180.0" text="Nome"/>
+                                <TableColumn fx:id="dataValutazioneColumn" prefWidth="120.0" text="Data valutazione"/>
+                                <TableColumn fx:id="voteColumn" prefWidth="70.0" text="Voto"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                              minWidth="-Infinity" prefWidth="800.0" spacing="80.0">
+
+                            <Button fx:id="showNotePane" styleClass="buttons" mnemonicParsing="false"
+                                    onAction="#showNotePaneClicked"
+                                    text="INSERISCI NOTA"
+                                    textAlignment="CENTER" wrapText="true"/>
+                            <Button fx:id="showVotoPane" styleClass="buttons" maxHeight="-Infinity"
+                                    mnemonicParsing="false" onAction="#showVotoPageClicked"
+                                    text="INSERISCI VOTO"
+                                    textAlignment="CENTER" wrapText="true"/>
+                        </HBox>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" left="10.0" right="10.0" top="10.0"/>
+                    </BorderPane.margin>
+                </VBox>
+            </center>
+            <top>
+                <BorderPane fx:id="topPane" minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0"
+                            BorderPane.alignment="TOP_CENTER">
+                    <bottom>
+                        <Label styleClass="titolo" text="Studenti" BorderPane.alignment="CENTER">
+                            <BorderPane.margin>
+                                <Insets bottom="10.0"/>
+                            </BorderPane.margin>
+                        </Label>
+                    </bottom>
+                    <center>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0"
+                              BorderPane.alignment="CENTER">
+                            <children>
+                                <Label styleClass="classe" text="Classe"/>
+                                <Label fx:id="classeLabel" styleClass="classe"/>
+                            </children>
+                        </HBox>
+                    </center>
+                    <top>
+                        <HBox prefHeight="50.0" prefWidth="1050.0" spacing="40.0" BorderPane.alignment="TOP_RIGHT">
+                            <children>
+                                <FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
+                                                 onMouseClicked="#backButtonClicked">
+                                    <HBox.margin>
+                                        <Insets left="5.0" top="5.0"/>
+                                    </HBox.margin>
+                                </FontAwesomeIcon>
+
+                            </children>
+                        </HBox>
+                    </top>
+                </BorderPane>
+            </top>
+        </BorderPane>
+        <BorderPane fx:id="addNotaPane" styleClass="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
+                    minHeight="-Infinity"
+                    minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+                    visible="false">
+            <center>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0"
+                      BorderPane.alignment="CENTER">
+                    <children>
+                        <Label fx:id="nominativoStudenteLabel" text="Nome e Cognome">
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="24.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TextField fx:id="notaField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+                                   minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="424.0"
+                                   promptText="Nota disciplinare..."/>
+                        <Button fx:id="addNota" styleClass="buttons" mnemonicParsing="false" onAction="#addNotaClicked"
+                                prefHeight="40.0"
+                                prefWidth="120.0" text="Conferma"/>
+                    </children>
+                </VBox>
+            </center>
+            <top>
+                <BorderPane prefHeight="118.0" prefWidth="600.0" styleClass="topPane"
+                            BorderPane.alignment="CENTER">
+                    <bottom>
+                        <Label text="Inserisci nota disciplinare" styleClass="titolo" BorderPane.alignment="CENTER">
+                            <BorderPane.margin>
+                                <Insets bottom="20.0"/>
+                            </BorderPane.margin>
+                        </Label>
+                    </bottom>
+                    <top>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="34.0" prefWidth="600.0"
+                              BorderPane.alignment="CENTER">
+                            <children>
+                                <FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
+                                                 onMouseClicked="#backNoteClicked">
+                                    <HBox.margin>
+                                        <Insets right="5.0" top="5.0"/>
+                                    </HBox.margin>
+                                </FontAwesomeIcon>
+                            </children>
+                        </HBox>
+                    </top>
+                </BorderPane>
+            </top>
+        </BorderPane>
+        <BorderPane fx:id="addVotoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                    minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="mainPane"
+                    visible="false">
+            <center>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0"
+                      BorderPane.alignment="CENTER">
+                    <children>
+                        <Label fx:id="nominativoStudenteVotoPane" text="Nome e Cognome">
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="24.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TextField fx:id="votoField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+                                   minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="424.0"
+                                   promptText="Inserisci voto nel formato numerico (1-10)"/>
+                        <Button fx:id="updateVotoButton" styleClass="buttons" mnemonicParsing="false"
+                                onAction="#updateVoto"
+                                text="Conferma" textFill="#00adb5"/>
+                    </children>
+                </VBox>
+            </center>
+            <top>
+                <BorderPane prefHeight="118.0" prefWidth="600.0" styleClass="topPane"
+                            BorderPane.alignment="CENTER">
+                    <bottom>
+                        <Label text="Aggiorna voto" styleClass="titolo" BorderPane.alignment="CENTER">
+                            <BorderPane.margin>
+                                <Insets bottom="20.0"/>
+                            </BorderPane.margin>
+                        </Label>
+                    </bottom>
+                    <top>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="34.0" prefWidth="600.0"
+                              BorderPane.alignment="CENTER">
+                            <children>
+                                <FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
+                                                 onMouseClicked="#backVoteClickedVotoPane">
+                                    <HBox.margin>
+                                        <Insets right="5.0" top="5.0"/>
+                                    </HBox.margin>
+                                </FontAwesomeIcon>
+                            </children>
+                        </HBox>
+                    </top>
+                </BorderPane>
+            </top>
+        </BorderPane>
+    </children>
+</StackPane>

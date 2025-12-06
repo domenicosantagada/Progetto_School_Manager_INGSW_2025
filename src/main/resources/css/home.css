@@ -1,0 +1,80 @@
+#mainPane{
+    -fx-background-color: #F5F0CD;
+    -fx-background-color: linear-gradient(to bottom, #fffbce, #FFF59D);
+    -fx-font-family: "Helvetica";
+}
+
+#topPane{
+    -fx-background-color: #B1F0F7;
+    -fx-background-color: linear-gradient(to bottom, #cbe7fb, #90CAF9);
+    -fx-font-family: "Helvetica";
+}
+
+.button{
+    -fx-background-color: #FADA7A;
+    -fx-text-fill: #1976D2; /* Colore del testo */
+    -fx-font-size: 25px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+    -fx-font-family: "Helvetica";
+}
+
+.button:hover{
+    -fx-background-color: #F5D34A;
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+#logoutButton:hover{
+    -fx-background-color: #ff4e4e;
+}
+
+#topPane .label{
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+}
+
+#boxNominativo, #boxMateria{
+    -fx-background-color: #f3f6f4;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 10px; /*lo spazio è 10px sopra e sotto e 20px a destra e sinistra*/
+}
+
+#nonValutatiPane, #insufficienzePane, #sufficienzePane, #mediaVotiPane {
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 10px;
+}
+
+#infoStudente .label{
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+}
+
+#pdfIcon:hover{
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+#backPageButton: hover{
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+#splitPane{
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 10px;
+}
+
+
+

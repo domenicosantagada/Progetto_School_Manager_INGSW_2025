@@ -1,0 +1,180 @@
+#mainPane, .mainPane{
+    -fx-background-color: #F5F0CD;
+    -fx-background-color: linear-gradient(to bottom, #fffbce, #FFF59D);
+    -fx-font-family: "Helvetica";
+}
+
+#topPane, .topPane{
+    -fx-background-color: #B1F0F7;
+    -fx-background-color: linear-gradient(to bottom, #cbe7fb, #90CAF9);
+    -fx-font-family: "Helvetica";
+}
+
+.buttons{
+    -fx-background-color: #FADA7A;
+    -fx-text-fill: #1976D2;
+    -fx-font-size: 17px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 15px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+    -fx-font-family: "Helvetica";
+}
+
+.button:hover{
+    -fx-background-color: #F5D34A;
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+#backPageButton: hover{
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+#meseLabel{
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+}
+
+.iconaFreccia:hover{
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+
+
+.titolo {
+    -fx-font-size: 20px;
+    -fx-font-family: "Helvetica";
+        -fx-font-style: italic;
+    -fx-text-fill: #1976D2;
+}
+
+.classe {
+    -fx-font-size: 40px;
+    -fx-font-family: "Helvetica";
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+}
+
+
+.choice-box, .date-picker {
+    -fx-pref-height: 34px;
+    -fx-pref-width: 213px;
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.choice-box:hover, .date-picker:hover {
+    -fx-background-color: #e6e6e6;
+    -fx-border-color: #b0b0b0;
+}
+
+
+
+/* Stile generale per il TableView */
+.tabella {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Stile per centrare il contenuto delle celle */
+.tabella .table-cell {
+    -fx-alignment: CENTER; /* Centra il testo orizzontalmente e verticalmente */
+    -fx-font-size: 14px;  /* Dimensione del testo */
+    -fx-padding: 5px;     /* Spaziatura interna */
+    -fx-text-fill: #333333; /* Colore del testo */
+}
+
+/* Stile per l'intestazione delle colonne */
+.tabella .column-header {
+    -fx-alignment: CENTER; /* Centra il testo delle intestazioni */
+    -fx-background-color: linear-gradient(to bottom, #f5f5f5, #e6e6e6); /* Sfondo sfumato */
+    -fx-border-color: #cccccc; /* Bordo */
+    -fx-font-weight: bold; /* Testo in grassetto */
+    -fx-text-fill: #1976D2; /* Colore del testo */
+}
+
+/* Stile per la riga selezionata */
+.tabella .table-row-cell:selected {
+    -fx-background-color: #f0f8ff; /* Colore di sfondo per la riga selezionata */
+    -fx-text-fill: #000000; /* Colore del testo */
+    -fx-font-weight: bold; /* Testo in grassetto */
+}
+
+.box{
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 10px;
+}
+
+#pdfIcon:hover{
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.textArea{
+    -fx-background-color: #f4f4f4;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-font-size: 17px;
+    -fx-text-fill: #333333;
+    -fx-padding: 10px 10px;
+    -fx-font-family: "Helvetica";
+}
+
+.scrollPane{
+    -fx-border-color: #1976D2;
+    -fx-border-width: 2px;
+    -fx-font-size: 17px;
+    -fx-text-fill: #333333;
+    -fx-font-family: "Helvetica";
+    -fx-padding: 10px 10px;
+}
+
+.compitiPane{
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding:20px 20px 20px 20px;
+    -fx-background-color: white;
+}
+
+.materiaLabel{
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+    -fx-padding:5px 5px 5px 5px;
+}
+
+.messageLabel{
+    -fx-font-size: 16px;
+    -fx-text-fill: black;
+}
+
+.dateLabel{
+    -fx-font-size: 15px;
+    -fx-font-style: italic;
+    -fx-text-fill:black;
+    -fx-padding:5px 5px;
+}
+
+/*thumb style*/
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #1976D2;
+    -fx-background-radius: 10px;
+}
+

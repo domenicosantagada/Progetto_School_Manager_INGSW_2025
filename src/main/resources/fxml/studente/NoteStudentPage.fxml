@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane prefHeight="760.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/21.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.studente.NoteController"
+            styleClass="mainPane">
+
+    <stylesheets>
+        <URL value="@../../css/assenze.css"/>
+    </stylesheets>
+
+    <top>
+        <BorderPane fx:id="topPane" minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0"
+                    BorderPane.alignment="TOP_CENTER">
+            <bottom>
+                <Label styleClass="titolo" text="Note disciplinari" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets bottom="10.0"/>
+                    </BorderPane.margin>
+                </Label>
+            </bottom>
+
+            <center>
+                <VBox alignment="CENTER" spacing="5.0">
+                    <Label styleClass="classe" fx:id="nominativoStudente"/>
+                    <Label styleClass="classe" fx:id="classeStudente"/>
+                </VBox>
+            </center>
+
+            <top>
+                <HBox prefHeight="50.0" prefWidth="1050.0" spacing="40.0" BorderPane.alignment="TOP_RIGHT">
+                    <children>
+                        <FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
+                                         onMouseClicked="#backButtonClicked">
+                            <HBox.margin>
+                                <Insets left="5.0" top="5.0"/>
+                            </HBox.margin>
+                        </FontAwesomeIcon>
+                    </children>
+                </HBox>
+            </top>
+        </BorderPane>
+    </top>
+    <center>
+        <ScrollPane styleClass="scrollPane" fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+            <content>
+                <BorderPane>
+                    <center>
+                        <VBox fx:id="noteContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+                            <opaqueInsets>
+                                <Insets/>
+                            </opaqueInsets>
+                        </VBox>
+                    </center>
+                </BorderPane>
+            </content>
+            <BorderPane.margin>
+                <Insets bottom="20.0" top="20.0" right="20" left="20"/>
+            </BorderPane.margin>
+        </ScrollPane>
+    </center>
+</BorderPane>

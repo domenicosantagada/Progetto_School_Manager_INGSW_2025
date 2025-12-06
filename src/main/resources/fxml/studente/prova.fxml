@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+-->
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane prefHeight="760.0" prefWidth="1050.0" styleClass="mainPane" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.studente.CompitiController">
+
+    <stylesheets>
+        <URL value="@../../css/assenze.css"/>
+    </stylesheets>
+
+
+    <top>
+        <BorderPane minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+
+            <top>
+                <BorderPane fx:id="topPane" minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0"
+                            BorderPane.alignment="TOP_CENTER">
+                    <bottom>
+                        <Label styleClass="titolo" text="Compiti" BorderPane.alignment="CENTER">
+                            <BorderPane.margin>
+                                <Insets bottom="10.0"/>
+                            </BorderPane.margin>
+                        </Label>
+                    </bottom>
+                    <center>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0"
+                              BorderPane.alignment="CENTER">
+                            <children>
+                                <Label styleClass="classe" text="Classe"/>
+                                <Label fx:id="classeLabel" styleClass="classe"/>
+                            </children>
+                        </HBox>
+                    </center>
+                    <top>
+                        <HBox prefHeight="50.0" prefWidth="1050.0" spacing="40.0" BorderPane.alignment="TOP_RIGHT">
+                            <children>
+                                <!--<FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
+                                                 onMouseClicked="#backButtonClicked">
+                                    <HBox.margin>
+                                        <Insets left="5.0" top="5.0"/>
+                                    </HBox.margin>
+                                </FontAwesomeIcon>-->
+                            </children>
+                        </HBox>
+                    </top>
+                </BorderPane>
+            </top>
+        </BorderPane>
+    </top>
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="scrollPane" BorderPane.alignment="CENTER">
+            <content>
+                <BorderPane>
+                    <center>
+                        <VBox fx:id="votiContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+                            <opaqueInsets>
+                                <Insets/>
+                            </opaqueInsets>
+                            <children>
+                                <BorderPane fx:id="compitiPane" prefHeight="200.0" prefWidth="200.0"
+                                            styleClass="compitiPane">
+                                    <VBox.margin>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                    </VBox.margin>
+                                </BorderPane>
+                                <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="compitiPane">
+                                    <VBox.margin>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                    </VBox.margin>
+                                </BorderPane>
+                            </children>
+                        </VBox>
+                    </center>
+                </BorderPane>
+            </content>
+            <BorderPane.margin>
+                <Insets bottom="20.0" left="20" right="20" top="20.0"/>
+            </BorderPane.margin>
+        </ScrollPane>
+    </center>
+</BorderPane>

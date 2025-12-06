@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0"
+            prefWidth="1050.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="application.controller.prof.HomeProfController">
+
+    <stylesheets>
+        <URL value="@../../css/home.css"/>
+    </stylesheets>
+
+
+    <children>
+        <BorderPane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <center>
+                <GridPane fx:id="gridPane" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                          minWidth="-Infinity" prefHeight="452.0" prefWidth="694.0" vgap="20.0"
+                          BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Button fx:id="studentButton" mnemonicParsing="false" onAction="#studentsClicked"
+                                prefHeight="332.0" prefWidth="543.0" text="  Studenti" GridPane.halignment="CENTER"
+                                GridPane.valignment="CENTER">
+                            <graphic>
+                                <FontAwesomeIcon fill="#1976D2" iconName="GROUP" size="60"/>
+                            </graphic>
+                            <GridPane.margin>
+                                <Insets/>
+                            </GridPane.margin>
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                        <Button fx:id="assignmentButton" mnemonicParsing="false" onAction="#assgimentClicked"
+                                prefHeight="325.0" prefWidth="535.0" text="  Compiti" GridPane.columnIndex="1"
+                                GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                            <graphic>
+                                <FontAwesomeIcon fill="#1976D2" iconName="FILE_TEXT" size="60"/>
+                            </graphic>
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                        <Button fx:id="assenzeButton" mnemonicParsing="false" onAction="#assenzeClicked"
+                                prefHeight="324.0" prefWidth="535.0" text="  Presenze" GridPane.halignment="CENTER"
+                                GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                            <graphic>
+                                <FontAwesomeIcon fill="#1976D2" iconName="CALENDAR" size="60"/>
+                            </graphic>
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                        <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutClicked"
+                                prefHeight="327.0" prefWidth="534.0" text="  Esci" GridPane.columnIndex="1"
+                                GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                            <graphic>
+                                <FontAwesomeIcon fill="#1976D2" iconName="SIGN_OUT" size="60"/>
+                            </graphic>
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                    </children>
+                </GridPane>
+            </center>
+            <top>
+                <BorderPane fx:id="topPane" minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0"
+                            BorderPane.alignment="CENTER">
+                    <top>
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                            <children>
+                                <HBox fx:id="boxNominativo" spacing="12.0">
+                                    <children>
+                                        <Label textFill="#eeeeee">
+                                            <font>
+                                                <Font size="25.0"/>
+                                            </font>
+                                            <graphic>
+                                                <FontAwesomeIcon fill="#1976D2" iconName="USER" size="30"/>
+                                            </graphic>
+                                        </Label>
+                                        <Label fx:id="profInfo" textFill="#eeeeee">
+                                            <font>
+                                                <Font size="15.0"/>
+                                            </font>
+                                            <HBox.margin>
+                                                <Insets/>
+                                            </HBox.margin>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <HBox fx:id="boxMateria" spacing="12.0">
+                                    <children>
+                                        <Label textFill="#eeeeee">
+                                            <font>
+                                                <Font size="25.0"/>
+                                            </font>
+                                            <graphic>
+                                                <FontAwesomeIcon fill="#1976D2" iconName="BOOK" size="30"/>
+                                            </graphic>
+                                        </Label>
+                                        <Label fx:id="materiaProf" textFill="#eeeeee">
+                                            <font>
+                                                <Font size="15.0"/>
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                            <BorderPane.margin>
+                                <Insets left="10.0" top="10.0"/>
+                            </BorderPane.margin>
+                        </HBox>
+                    </top>
+                    <center>
+                        <ImageView fx:id="logoView" fitHeight="150.0" pickOnBounds="true"
+                                   preserveRatio="true" BorderPane.alignment="CENTER">
+                            <image>
+                                <Image url="@./"/>
+                            </image>
+                            <BorderPane.margin>
+                                <Insets bottom="10.0"/>
+                            </BorderPane.margin>
+                        </ImageView>
+                    </center>
+                </BorderPane>
+
+            </top>
+        </BorderPane>
+    </children>
+</AnchorPane>

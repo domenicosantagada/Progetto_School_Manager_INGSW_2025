@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<BorderPane fx:id="mainPane" prefHeight="760.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.studente.AndamentoController">
+
+    <stylesheets>
+        <URL value="@../../css/home.css"/>
+    </stylesheets>
+
+    <top>
+        <BorderPane fx:id="topPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="200.0" prefWidth="1050.0"
+                    BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+            <top>
+                <FontAwesomeIcon fx:id="backPageButton" iconName="ARROW_LEFT" size="30"
+                                 onMouseClicked="#backButtonClicked"
+                                 BorderPane.alignment="CENTER_LEFT">
+                    <BorderPane.margin>
+                        <Insets left="5.0" top="5.0"/>
+                    </BorderPane.margin>
+                </FontAwesomeIcon>
+
+            </top>
+            <center>
+                <VBox fx:id="infoStudente" alignment="CENTER" spacing="5.0">
+                    <Label fx:id="nominativoStudente">
+                        <font>
+                            <Font size="35.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="classeStudente">
+                        <font>
+                            <Font size="20.0"/>
+                        </font>
+                    </Label>
+                </VBox>
+            </center>
+            <bottom>
+                <Label fx:id="categoriaMenu" text="Andamento scolastico" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets bottom="10.0"/>
+                    </BorderPane.margin>
+                </Label>
+            </bottom>
+        </BorderPane>
+    </top>
+    <center>
+        <VBox fx:id="vBoxContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0"
+              BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="1030.0">
+                    <children>
+                        <FontAwesomeIcon fx:id="pdfIcon" fill="#00adb5" iconName="FILE_PDF_ALT"
+                                         onMouseClicked="#exportPDF" size="24"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" prefHeight="90.0" prefWidth="800.0" spacing="40.0">
+                    <children>
+                        <BorderPane fx:id="nonValutatiPane" style="-fx-background-color:#F4D03F" prefHeight="200.0"
+                                    prefWidth="200.0">
+                            <bottom>
+                                <Label text="Non valutati" BorderPane.alignment="CENTER" style="-fx-font-weight: bold;">
+                                    <BorderPane.margin>
+                                        <Insets bottom="10.0"/>
+                                    </BorderPane.margin>
+                                    <graphic>
+                                        <FontAwesomeIcon fill="#1976D2" iconName="PAUSE" size="18"/>
+                                    </graphic>
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                </Label>
+                            </bottom>
+                            <center>
+                                <Label fx:id="votiInAttesaLabel" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="40.0"/>
+                                    </font>
+                                </Label>
+                            </center>
+                        </BorderPane>
+                        <BorderPane fx:id="insufficienzePane" style="-fx-background-color:#E74C3C" prefHeight="200.0"
+                                    prefWidth="200.0">
+                            <bottom>
+                                <Label text="Insufficienze" BorderPane.alignment="CENTER"
+                                       style="-fx-font-weight: bold;">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                    <graphic>
+                                        <FontAwesomeIcon fill="#1976D2" iconName="CLOSE" size="18"/>
+                                    </graphic>
+                                    <BorderPane.margin>
+                                        <Insets bottom="10.0"/>
+                                    </BorderPane.margin>
+                                </Label>
+                            </bottom>
+                            <center>
+                                <Label fx:id="insufficienzeLabel" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="40.0"/>
+                                    </font>
+                                </Label>
+                            </center>
+                        </BorderPane>
+                        <BorderPane fx:id="sufficienzePane" style="-fx-background-color:#2ECC71" prefHeight="200.0"
+                                    prefWidth="200.0">
+                            <bottom>
+                                <Label text="Sufficienze" BorderPane.alignment="CENTER" style="-fx-font-weight: bold;">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                    <graphic>
+                                        <FontAwesomeIcon fill="#1976D2" iconName="CHECK" size="18"/>
+                                    </graphic>
+                                    <BorderPane.margin>
+                                        <Insets bottom="10.0"/>
+                                    </BorderPane.margin>
+                                </Label>
+                            </bottom>
+                            <center>
+                                <Label fx:id="sufficienzeLabel" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="40.0"/>
+                                    </font>
+                                </Label>
+                            </center>
+                        </BorderPane>
+                        <BorderPane fx:id="mediaVotiPane" style="-fx-background-color:#7FB3D5" prefHeight="200.0"
+                                    prefWidth="200.0">
+                            <bottom>
+                                <Label text="Media" BorderPane.alignment="CENTER" style="-fx-font-weight: bold;">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                    <graphic>
+                                        <FontAwesomeIcon fill="#1976D2" iconName="BAR_CHART" size="18"/>
+                                    </graphic>
+                                    <BorderPane.margin>
+                                        <Insets bottom="10.0"/>
+                                    </BorderPane.margin>
+                                </Label>
+                            </bottom>
+                            <center>
+                                <Label fx:id="mediaVoti" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="40.0"/>
+                                    </font>
+                                </Label>
+                            </center>
+                        </BorderPane>
+                    </children>
+                </HBox>
+                <SplitPane fx:id="splitPane" dividerPositions="0.3" prefHeight="380.0">
+                    <items>
+                        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true">
+                            <content>
+                                <VBox fx:id="listaVotiVBox" alignment="TOP_CENTER" prefWidth="305.0" spacing="15"
+                                      VBox.vgrow="ALWAYS">
+                                    <padding>
+                                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
+                                    </padding>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                            <center>
+                                <BarChart fx:id="andamentoChart" BorderPane.alignment="CENTER">
+                                    <xAxis>
+                                        <CategoryAxis fx:id="materieX" side="BOTTOM" tickLabelRotation="-90.0"/>
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis fx:id="votiY" minorTickCount="0" side="LEFT" tickLabelGap="6.0"
+                                                    upperBound="10.0"/>
+                                    </yAxis>
+                                </BarChart>
+                            </center>
+                        </BorderPane>
+                    </items>
+                </SplitPane>
+            </children>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </BorderPane.margin>
+        </VBox>
+    </center>
+</BorderPane>

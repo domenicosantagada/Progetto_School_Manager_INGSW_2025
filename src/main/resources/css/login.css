@@ -1,0 +1,64 @@
+/* Background generale */
+.root {
+    -fx-background-color: #F5F0CD; /* Colore di sfondo principale */
+    -fx-font-family: "Helvetica";
+}
+
+/* BorderPane sinistro */
+#left {
+    -fx-background-color: #B1F0F7; /* Colore di sfondo lato sinistro */
+}
+
+/* Bottone Registrati */
+#registrationButton {
+    -fx-background-color: #FADA7A; /* Colore di sfondo del bottone */
+    -fx-text-fill: #1976D2; /* Colore del testo */
+    -fx-font-size: 15px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+}
+
+#registrationButton:hover {
+    -fx-background-color: #F5D34A; /* Colore al passaggio del mouse */
+    /* Voglio che aumenti di dimensione */
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Bottone Login */
+#loginButton {
+    -fx-background-color: #FADA7A; /* Colore di sfondo del bottone */
+    -fx-text-fill: #1976D2; /* Colore del testo */
+    -fx-font-size: 15px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+
+}
+
+#loginButton:hover {
+    -fx-background-color: #F5D34A;
+    -fx-scale-x: 1.1;
+     -fx-scale-y: 1.1;
+}
+
+#nuovaRegistrazioneLabel {
+    -fx-color: #000000;
+    -fx-font-size: 15px;
+}
+
+#welcomeText {
+    -fx-text-fill: #000000;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+}
