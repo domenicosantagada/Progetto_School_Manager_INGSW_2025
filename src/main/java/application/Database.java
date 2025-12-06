@@ -1,15 +1,21 @@
 package application;
 
 import application.model.*;
+import application.observer.DataObserver;
+import application.observer.ObservableSubject;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Database {
+public class Database implements ObservableSubject {
 
+
+    // Lista di observer registrati che verranno notificati in caso di cambiamenti
+    private final List<DataObserver> observers = new ArrayList<>();
 
     private static final String DB_URL = "jdbc:sqlite:gestionale.db";
+
     // Singleton
     private static final Database instance = new Database();
     private Connection connection = null;
@@ -547,6 +553,9 @@ public class Database {
             statement.setString(4, nota.data());
             statement.executeUpdate();
             result = true;
+
+            // NOTIFICA: L'username dello studente è l'evento
+            notifyObservers(nota.studente());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -568,6 +577,9 @@ public class Database {
             statement.setString(4, valutazione.materia());
             statement.executeUpdate();
             result = true;
+
+            // NOTIFICA: L'username dello studente è l'evento
+            notifyObservers(valutazione.studente());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -647,6 +659,9 @@ public class Database {
             statement.setInt(3, assenza.mese());
             statement.setInt(4, assenza.anno());
             statement.executeUpdate();
+
+            // NOTIFICA: Usiamo una stringa generica per le assenze (potrebbe essere migliorata)
+            notifyObservers("ASSENZA_AGGIUNTA");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -707,5 +722,27 @@ public class Database {
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    // === IMPLEMENTAZIONE OBSERVER PATTERN (Soggetto Concreto) ===
+
+    @Override
+    public void attach(DataObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public void detach(DataObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Object event) {
+        // Notifica tutti gli observer registrati
+        for (DataObserver observer : observers) {
+            observer.update(event);
+        }
     }
 }

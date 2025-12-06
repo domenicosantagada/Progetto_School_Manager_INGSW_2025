@@ -5,6 +5,7 @@ import application.SceneHandler;
 import application.export.ExportContext;
 import application.export.PDFExportStrategy;
 import application.model.ValutazioneStudente;
+import application.observer.DataObserver;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -23,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AndamentoController {
+public class AndamentoController implements DataObserver {
 
 
     private List<String> materie = new ArrayList<>();
@@ -78,6 +79,9 @@ public class AndamentoController {
     @FXML
     public void initialize() {
         studente = SceneHandler.getInstance().getUsername();
+
+        Database.getInstance().attach(this);
+
         materie = Database.getInstance().getAllMaterieIstituto();
         materieX.setCategories(FXCollections.observableArrayList(materie));
         voti = Database.getInstance().getVotiStudente(studente);
@@ -186,5 +190,19 @@ public class AndamentoController {
         andamentoChart.getData().add(series);
         // Disabilita la legenda
         andamentoChart.setLegendVisible(false);
+    }
+
+    @Override
+    public void update(Object event) {
+        // Aggiorna solo se l'evento riguarda l'utente loggato (studente)
+        if (event instanceof String && event.equals(studente)) {
+            // Ricarica i dati
+            voti = Database.getInstance().getVotiStudente(studente);
+
+            // Aggiorna la UI (ricalcola chart e riepilogo)
+            updateChart(voti);
+            updateListVoti(voti);
+            updateRiepilogo(voti);
+        }
     }
 }

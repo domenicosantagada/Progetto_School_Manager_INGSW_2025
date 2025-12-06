@@ -8,6 +8,7 @@ import application.export.PDFClassExportStrategy;
 import application.model.Nota;
 import application.model.StudenteTable;
 import application.model.ValutazioneStudente;
+import application.observer.DataObserver;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class StudentiController {
+public class StudentiController implements DataObserver {
 
     private ObservableList<StudenteTable> studenti = FXCollections.observableArrayList();
 
@@ -145,14 +146,7 @@ public class StudentiController {
                     addVotoPane.setVisible(false);
                     mainPane.setDisable(false);
                     mainPane.setEffect(null);
-                    //Aggiorna la lista degli studenti e la tabella
-                    studentiList = Database.getInstance().getStudentiClasse(
-                            classeLabel.getText(),
-                            Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername())
-                    );
-                    aggiornaNumeroStudenti();
-                    aggiotnaAndamentoClasse();
-                    setStudents(studentiList); // Aggiorna la tabella
+
 
                 } else {
                     SceneHandler.getInstance().showWarning(MessageDebug.ERROR_VOTO_UPDATE);
@@ -177,6 +171,8 @@ public class StudentiController {
 
 
     public void initialize() {
+
+        Database.getInstance().attach(this);
 
         // Impostiamo la classe
         classeLabel.setText(Database.getInstance().getClasseUser(SceneHandler.getInstance().getUsername()));
@@ -245,5 +241,21 @@ public class StudentiController {
         addVotoPane.setVisible(false);
         mainPane.setDisable(false);
         mainPane.setEffect(null);
+    }
+
+    @Override
+    public void update(Object event) {
+        // Ignoriamo l'evento, aggiorniamo semplicemente l'intera tabella della classe
+
+        // Ricarica i dati dal Database
+        studentiList = Database.getInstance().getStudentiClasse(
+                classeLabel.getText(),
+                Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername())
+        );
+
+        // Aggiorna la UI
+        aggiornaNumeroStudenti();
+        aggiotnaAndamentoClasse();
+        setStudents(studentiList); // Aggiorna la tabella
     }
 }
