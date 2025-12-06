@@ -87,7 +87,8 @@ public class StudentiController {
         //PDFGenerator.getInstance().pdfAndamentoClasse(studentiList);
         // Implementazione del pattern Strategy
         ExportContext exportContext = ExportContext.getInstance();
-        exportContext.setStrategy(new PDFClassExportStrategy()); // 1. Imposta la strategia concreta (PDF Classe)
+        exportContext.setStrategy(new PDFClassExportStrategy()); // 1. Imposta la strategia concreta (CSV Classe)
+        //exportContext.setStrategy(new CSVClassExportStrategy()); // 1. Imposta la strategia concreta (PDF Classe)
         exportContext.exportAndamentoClasse(studentiList); // 2. Esegue il contesto
     }
 

@@ -71,6 +71,7 @@ public class AndamentoController {
         // Implementazione del pattern Strategy
         ExportContext exportContext = ExportContext.getInstance();
         exportContext.setStrategy(new PDFExportStrategy()); // 1. Imposta la strategia concreta (PDF)
+        //exportContext.setStrategy(new CSVExportStrategy()); // 1. Imposta la strategia concreta (CSV)
         exportContext.exportValutazione(voti); // 2. Esegue il contesto
     }
 
