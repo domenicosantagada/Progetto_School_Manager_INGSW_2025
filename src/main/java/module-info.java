@@ -17,4 +17,6 @@ module com.example.registroelettronico {
     opens application.controller.studente to javafx.fxml;
     exports application.model;
     opens application.model to javafx.fxml;
+    exports application.export;
+    opens application.export to javafx.fxml;
 }

@@ -1,6 +1,8 @@
-package application;
+package application.export;
 
-import application.model.StudenteTable;
+import application.Database;
+import application.SceneHandler;
+import application.model.ValutazioneStudente;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -15,26 +17,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class PDFClassExportStrategy implements ClassEvaluationStrategy {
+public class PDFExportStrategy implements StudentEvaluationStrategy {
 
     private final Database database = Database.getInstance();
     private final SceneHandler sceneHandler = SceneHandler.getInstance();
 
     @Override
-    public void export(List<StudenteTable> studenti, File file) throws Exception {
+    public void export(List<ValutazioneStudente> voti, File file) throws Exception {
         if (file == null) return;
-        creaPDFAndamento(studenti, file.getAbsolutePath());
+        creaPDFValutazione(voti, file.getAbsolutePath());
     }
 
-    private void creaPDFAndamento(List<StudenteTable> studenti, String outputPath) throws IOException, DocumentException {
+    private void creaPDFValutazione(List<ValutazioneStudente> voti, String outputPath) throws IOException, DocumentException {
         // Data needed from SceneHandler/Database
         String username = sceneHandler.getUsername();
         String nominativo = database.getFullName(username);
         String classe = database.getClasseUser(username);
-        String materia = database.getMateriaProf(username);
+        String dataNascita = database.getDataNascita(username);
 
         // Sort the list as done in old PDFGenerator
-        studenti.sort((s1, s2) -> s1.cognome().compareTo(s2.cognome()));
+        voti.sort(ValutazioneStudente::compareTo);
 
         // Crea il documento PDF
         Document document = new Document();
@@ -62,34 +64,29 @@ public class PDFClassExportStrategy implements ClassEvaluationStrategy {
         document.add(new Paragraph("\n\n"));
 
         Font typeDocument = new Font(Font.FontFamily.HELVETICA, 17, Font.BOLD);
-        Paragraph type = new Paragraph("ANDAMENTO CLASSE " + classe, typeDocument);
+        Paragraph type = new Paragraph("SCHEDA DI VALUTAZINE", typeDocument);
         type.setAlignment(Element.ALIGN_CENTER);
         document.add(type);
 
-        document.add(new Paragraph("\n"));
-
-
-        Font materiaFont = new Font(Font.FontFamily.HELVETICA, 17, Font.BOLD);
-        Paragraph student = new Paragraph(materia, materiaFont);
-        student.setAlignment(Element.ALIGN_CENTER);
-        document.add(student);
-
         Font genericText = new Font(Font.FontFamily.HELVETICA, 12);
-        Paragraph text = new Paragraph("del docente ", genericText);
+        Paragraph text = new Paragraph("di ", genericText);
         text.setAlignment(Element.ALIGN_CENTER);
         document.add(text);
 
-        Font profFont = new Font(Font.FontFamily.HELVETICA, 15, Font.BOLD);
-        Paragraph docente = new Paragraph(nominativo.toUpperCase(), profFont);
-        docente.setAlignment(Element.ALIGN_CENTER);
-        document.add(docente);
+        Font studentFont = new Font(Font.FontFamily.HELVETICA, 17, Font.BOLD);
+        Paragraph student = new Paragraph(nominativo.toUpperCase(), typeDocument);
+        student.setAlignment(Element.ALIGN_CENTER);
+        document.add(student);
 
+        Paragraph datiStudente = new Paragraph("nato/a il " + dataNascita + " e frequentante la classe " + classe, genericText);
+        datiStudente.setAlignment(Element.ALIGN_CENTER);
+        document.add(datiStudente);
 
         //aggiungo spazio dopo i dati dello studente
-        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("\n\n"));
 
         // Crea una tabella con 3 colonne
-        PdfPTable table = new PdfPTable(3); // Studente - Data Valutazione - Voto
+        PdfPTable table = new PdfPTable(3); // Materia - Prof - Voto
         table.setWidths(new int[]{2, 2, 1}); // Larghezza delle colonne
         table.setSpacingBefore(10f);
         table.setSpacingAfter(10f);
@@ -102,7 +99,7 @@ public class PDFClassExportStrategy implements ClassEvaluationStrategy {
         BaseColor headerBgColor = new BaseColor(173, 216, 230); // Azzurro chiaro
 
         // Intestazioni della tabella
-        String[] headers = {"Studente", "Data Valutazione", "Voto"};
+        String[] headers = {"Materia", "Docente", "Voto"};
         for (String header : headers) {
             PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -113,23 +110,23 @@ public class PDFClassExportStrategy implements ClassEvaluationStrategy {
         }
 
         // Dati della tabella
-        for (StudenteTable s : studenti) {
-            // Cella studente
-            PdfPCell cell = new PdfPCell(new Phrase(s.cognome().toUpperCase() + " " + s.nome().toUpperCase(), cellFont));
+        for (ValutazioneStudente voto : voti) {
+            // Cella materia
+            PdfPCell cell = new PdfPCell(new Phrase(voto.materia(), cellFont));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             cell.setPadding(8f);
             table.addCell(cell);
 
-            // Cella data
-            cell = new PdfPCell(new Phrase(s.dataValutazione(), cellFont));
+            // Cella docente
+            cell = new PdfPCell(new Phrase(database.getFullName(voto.prof()).toUpperCase(), cellFont));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             cell.setPadding(8f);
             table.addCell(cell);
 
             // Cella voto
-            String votoString = s.voto() == 0 ? "N.d." : String.valueOf(s.voto());
+            String votoString = voto.voto() == 0 ? "N.d." : String.valueOf(voto.voto());
             cell = new PdfPCell(new Phrase(votoString, cellFont));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -145,7 +142,7 @@ public class PDFClassExportStrategy implements ClassEvaluationStrategy {
         document.add(note);
 
         //Aggiungo spazio dopo la tabella
-        document.add(new Paragraph("\n\n"));
+        document.add(new Paragraph("\n\n\n\n"));
 
         // Font del footer personalizzato
         Font footerFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLDITALIC, BaseColor.GRAY);
@@ -163,7 +160,8 @@ public class PDFClassExportStrategy implements ClassEvaluationStrategy {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salva PDF");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        fileChooser.setInitialFileName(nominativo + " - Andamento classe " + classe + ".pdf");
+        fileChooser.setInitialFileName(nominativo + " - " + classe + ".pdf");
+        // Nota: Nel contesto dell'applicazione JavaFX, si può passare null come owner per un fileChooser che non ha un parent specifico.
         return fileChooser.showSaveDialog(owner);
     }
 }

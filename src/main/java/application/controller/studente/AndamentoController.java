@@ -1,9 +1,9 @@
 package application.controller.studente;
 
 import application.Database;
-import application.ExportContext;
-import application.PDFExportStrategy;
 import application.SceneHandler;
+import application.export.ExportContext;
+import application.export.PDFExportStrategy;
 import application.model.ValutazioneStudente;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

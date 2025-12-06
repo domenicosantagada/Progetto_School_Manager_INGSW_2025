@@ -1,6 +1,10 @@
 package application.controller.prof;
 
-import application.*;
+import application.Database;
+import application.MessageDebug;
+import application.SceneHandler;
+import application.export.ExportContext;
+import application.export.PDFClassExportStrategy;
 import application.model.Nota;
 import application.model.StudenteTable;
 import application.model.ValutazioneStudente;
