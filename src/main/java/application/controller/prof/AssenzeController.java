@@ -33,7 +33,7 @@ public class AssenzeController {
     private BorderPane mainPane;
 
     @FXML
-    private BorderPane updatePane;
+    private BorderPane updatePane; // Pannello per aggiungere una nuova assenza
 
     @FXML
     private Label meseLabel;
@@ -44,47 +44,80 @@ public class AssenzeController {
     @FXML
     private GridPane calendarioGrid;
 
+    // Variabili per tenere traccia del professore, classe e materia
     private String prof;
     private String classe;
     private String materia;
+
+    // Lista degli studenti della classe
     private List<StudenteTable> studenti;
+
+    // Mappa per tenere traccia della posizione di ogni studente nella griglia del calendario
     private final Map<StudenteTable, Integer> posizioneStudenti = new HashMap<>();
+
+    // Variabile per tenere traccia del mese corrente
     private LocalDate mese;
 
     @FXML
     public void initialize() {
-        // Aggiungere un listener per la scena
+        // Viene aggiunto un "listener" (un osservatore) alla proprietà scene della classeLabel.
+        // Poiché al momento dell'esecuzione di initialize la Scene (la finestra) potrebbe non
+        // essere ancora completamente formata, questo codice attende che la scena venga assegnata.
         classeLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             }
         });
 
+        // Inizialmente nascondiamo il pannello di aggiunta di una nuova assenza
         updatePane.setVisible(false);
+
+        // Impostiamo il mese corrente, il professore, la classe e la materia
         setMeseCorrente();
         setProfClasse();
+
+        // Otteniamo la lista degli studenti della classe per la materia specifica
+        // anche se la materia non viene utilizzata in questo contesto, viene comunque recuperata
+        // per utilizzare lo stesso metodo di accesso al database che viene usato per
+        // recuperare gli studenti in altri contesti.
         studenti = Database.getInstance().getStudentiClasse(classe, materia);
+
+        // Mappiamo gli studenti alle loro posizioni nella griglia del calendario (studente -> indice)
         mappaStudenti();
+
+        // Popoliamo il calendario con i giorni del mese e i nomi degli studenti
         populateCalendar();
+
+        // Popoliamo la ChoiceBox con i nomi degli studenti
         for (StudenteTable s : studenti) {
             studenteChoice.getItems().add(s.cognome().toUpperCase() + " " + s.nome().toUpperCase());
         }
-        setAssenze();
 
+        // Impostiamo le assenze degli studenti nel calendario
+        setAssenze();
     }
 
     private void mappaStudenti() {
         for (StudenteTable s : studenti) {
             posizioneStudenti.put(s, studenti.indexOf(s));
+            /* Esempio di output della mappa
+                s: CAPRARO posizione: 0
+                s: LUZZI posizione: 1
+                s: MAZZEI posizione: 2
+                s: SANTAGADA posizione: 3
+                s: SANTAGADA posizione: 4
+             */
         }
     }
 
     private void setAssenze() {
         for (StudenteTable s : studenti) {
+            // Otteniamo la lista delle assenze per lo studente nel mese corrente
             List<Assenza> assenzeStudente = Database.getInstance().getAssenzeStudente(s.username(), mese.getMonthValue());
+
+            // Coloriamo le celle corrispondenti alle assenze nello schema del calendario
             for (Assenza a : assenzeStudente) {
-                Integer giornoAssenza = a.giorno();
-                coloraCella(posizioneStudenti.get(s), giornoAssenza);
+                coloraCella(posizioneStudenti.get(s), a.giorno());
             }
         }
     }
@@ -154,10 +187,13 @@ public class AssenzeController {
     }
 
     private void coloraCella(Integer posizione, Integer giorno) {
-        // Esempio coordinata della matrice 2 2 (riga 2 colonna 2) la coloro di rosso
+        // Creo una nuova cella rossa per indicare l'assenza
         Pane cellaRossa = new Pane(); // Usare un `Pane` vuoto per rappresentare la cella
         cellaRossa.setStyle("-fx-background-color: red;"); // Imposta il colore di sfondo a rosso
-        calendarioGrid.add(cellaRossa, giorno, posizione + 1); // Aggiungi la cella alla griglia
+
+        // Aggiungo la cella rossa alla griglia del calendario
+        // giorno + 1 perché la prima colonna è riservata ai nomi degli studenti
+        calendarioGrid.add(cellaRossa, giorno, posizione + 1);
     }
 
     // Torno alla home page del professore
