@@ -23,80 +23,85 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class RegistrationController {
+
+    // Costanti per distinguere i tipi di utente
     public static final String PROFTYPE = "professore";
     public static final String STUDENTTYPE = "studente";
 
     @FXML
-    private ChoiceBox materiaChoiceBox;
-
+    private ChoiceBox materiaChoiceBox; // lista materie, visibile solo per i prof
     @FXML
-    private Button registerButton;
-
+    private Button registerButton; // pulsante di registrazione
     @FXML
-    private Label materiaLabel; // visibile solo se il tipo è professore
-
+    private Label materiaLabel; // label della materia (solo prof)
     @FXML
-    private TextField codiceIscrizione; // codice di iscrizione (capiamo se è un prof o un alunno di una determinata classe)
-
-
+    private TextField codiceIscrizione; // codice di iscrizione (identifica classe o ruolo)
     @FXML
-    private TextField surnameField;
-
+    private TextField surnameField; // cognome
     @FXML
-    private PasswordField repeatPasswordField;
-
+    private PasswordField repeatPasswordField; // conferma password
     @FXML
-    private TextField nameField;
-
+    private TextField nameField; // nome
     @FXML
-    private DatePicker datePicker;
-
+    private DatePicker datePicker; // data di nascita
     @FXML
-    private PasswordField passwordField;
-
+    private PasswordField passwordField; // password
     @FXML
-    private TextField usernameField;
-
+    private TextField usernameField; // username
     @FXML
-    private ImageView logoView;
+    private ImageView logoView; // immagine del logo
 
     @FXML
     public void registerClicked(ActionEvent actionEvent) throws IOException {
+        // Lettura dei campi utente
         String username = this.usernameField.getText();
         String nome = this.nameField.getText();
         String cognome = this.surnameField.getText();
         String dataNascita = "";
+
+        // Formattazione della data (se inserita)
         if (datePicker.getValue() != null) {
             dataNascita = this.datePicker.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         }
+
+        // Codice iscrizione e materia (per i professori)
         String codiceIscrizione = this.codiceIscrizione.getText();
         String materia = this.materiaChoiceBox.getValue() == null ? "" : this.materiaChoiceBox.getValue().toString();
+
+        // Password e hashing
         String password = this.passwordField.getText();
         String hashedPassword = BCryptService.hashPassword(password);
 
-        if (username.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty() || codiceIscrizione.isEmpty() || password.isEmpty()) {
+        // Controlli preliminari sui campi
+        if (username.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()
+                || codiceIscrizione.isEmpty() || password.isEmpty()) {
             SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
-        } else if (usernameUtilizzato(username)) {
+        } else if (usernameUtilizzato(username)) { // Username già presente
             SceneHandler.getInstance().showWarning(MessageDebug.USERNAME_NOT_VALID);
-        } else if (datePicker.getValue().isAfter(LocalDate.now())) {
+        } else if (datePicker.getValue().isAfter(LocalDate.now())) { // Data impossibile
             SceneHandler.getInstance().showWarning(MessageDebug.DATE_NOT_VALID);
-        } else if (!password.equals(repeatPasswordField.getText())) {
+        } else if (!password.equals(repeatPasswordField.getText())) { // Le password non combaciano
             SceneHandler.getInstance().showWarning(MessageDebug.PASSWORD_NOT_MATCH);
-        } else if (password.length() < 4) {
+        } else if (password.length() < 4) { // Password troppo corta
             SceneHandler.getInstance().showWarning(MessageDebug.PASSWORD_NOT_VALID);
         } else {
+            // Creazione oggetto utente generico
             User user = new User(username, nome.toUpperCase(), cognome.toUpperCase(), hashedPassword, dataNascita);
+
+            // Recupero tipo (prof o studente) dal codice di iscrizione
             TipologiaClasse tipologiaUtente = Database.getInstance().getTipologiaUtente(codiceIscrizione);
 
-            if (tipologiaUtente == null) {
+            if (tipologiaUtente == null) { // Codice non valido
                 SceneHandler.getInstance().showWarning(MessageDebug.CODE_ERROR);
             } else if (tipologiaUtente.tipologia().equals("studente")) {
+                // Creazione studente
                 Studente studente = new Studente(user, tipologiaUtente.classe());
                 if (Database.getInstance().insertStudente(studente)) {
                     SceneHandler.getInstance().showInformation(MessageDebug.REGISTRATION_OK);
                     SceneHandler.getInstance().setLoginPage();
                 }
             } else if (tipologiaUtente.tipologia().equals("professore")) {
+                // Registrazione professore richiede anche materia
                 if (materia.isEmpty()) {
                     SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
                 } else {
@@ -110,67 +115,75 @@ public class RegistrationController {
         }
     }
 
+    // Controlla se lo username è già usato
     private boolean usernameUtilizzato(String username) {
         return Database.getInstance().usernameUtilizzato(username);
     }
 
+    // Verifica validità del codice di iscrizione
     private boolean codiceIscrizioneValido(String codiceIscrizione) {
         return Database.getInstance().codiceIscrizioneValido(codiceIscrizione);
     }
 
+    // Recupera tipologia utente dal codice
     private String tipologiaUser(String codiceIscrizione) {
         return Database.getInstance().tipologiaUser(codiceIscrizione);
     }
 
     public void initialize() {
+        // Imposta immagine del logo
         String imagePath = getClass().getResource("/icon/logo.png").toExternalForm();
         logoView.setImage(new Image(imagePath));
 
+        // Aggiunge i listener per la validazione in tempo reale
         addListeners();
 
+        // Nasconde i campi relativi ai professori
         materiaChoiceBox.setVisible(false);
         materiaLabel.setVisible(false);
 
+        // Riempie la choice box delle materie
         setMaterieChoiceBox();
     }
 
+    // Inserisce nella choiceBox le materie prelevate dal DB
     private void setMaterieChoiceBox() {
         List<String> materie = Database.getInstance().getAllMaterieIstituto();
         materiaChoiceBox.getItems().addAll(materie);
     }
 
-    // il listener controlla se i campi sono vuoti o se la password è troppo corta e serve per cambiare il colore del campo
-    // in tempo reale
+    // Listener per validazione live dei campi
     private void addListeners() {
+
+        // Listener sul campo username
         usernameField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 
+                // Controlli sullo username
                 if (newValue == null || newValue.isBlank()) {
-                    // Caso 1: Campo vuoto o spazi
                     usernameField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else if (!usernameUtilizzato(newValue)) {
-                    // Caso 2: Username non utilizzato
                     usernameField.styleProperty().set(MessageDebug.CHECK_OK_COLOR);
                 } else {
-                    // Caso 3: Username già utilizzato
                     usernameField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 }
             }
         });
 
+        // Listener sul codice di iscrizione
         codiceIscrizione.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
                 if (newValue == null || newValue.isBlank()) {
-                    // Caso 1: Campo vuoto o spazi
                     codiceIscrizione.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else if (!codiceIscrizioneValido(newValue)) {
-                    // Caso 2: Codice non valido
                     codiceIscrizione.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else {
-                    // Caso 3: Codice valido
                     codiceIscrizione.styleProperty().set(MessageDebug.CHECK_OK_COLOR);
+
+                    // Se il codice indica un professore, mostra campo materia
                     if (tipologiaUser(newValue).equals(MessageDebug.PROF_TYPE)) {
                         materiaChoiceBox.setVisible(true);
                         materiaLabel.setVisible(true);
@@ -182,42 +195,41 @@ public class RegistrationController {
             }
         });
 
+        // Listener sulla password
         passwordField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
                 if (newValue == null || newValue.isBlank()) {
-                    // Caso 1: Campo vuoto o spazi
                     passwordField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else if (newValue.length() < 4) {
-                    // Caso 2: Password troppo corta
                     passwordField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else {
-                    // Caso 3: Password valida
                     passwordField.styleProperty().set(MessageDebug.CHECK_OK_COLOR);
                 }
             }
         });
 
+        // Listener sulla ripetizione password
         repeatPasswordField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
                 if (newValue == null || newValue.isBlank()) {
-                    // Caso 1: Campo vuoto o spazi
                     repeatPasswordField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else if (!newValue.equals(passwordField.getText())) {
-                    // Caso 2: Password non corrispondente
                     repeatPasswordField.styleProperty().set(MessageDebug.CHECK_NOT_OK_COLOR);
                 } else {
-                    // Caso 3: Password corrispondente
                     repeatPasswordField.styleProperty().set(MessageDebug.CHECK_OK_COLOR);
                 }
             }
         });
     }
 
-
+    // Torna alla pagina di login
     @FXML
     public void backButtonClicked(MouseEvent mouseEvent) throws IOException {
+        // Torna alla pagina login
         SceneHandler.getInstance().setLoginPage();
     }
 }
