@@ -14,19 +14,19 @@ import java.util.List;
 
 public class NoteController {
 
-    @FXML
-    private Label nominativoStudente;
-
-    @FXML
-    private VBox noteContainer;
-
-    @FXML
-    private Label classeStudente;
 
     private String studente;
     private String classe;
     private List<Nota> noteStudente = null;
 
+    @FXML
+    private Label nominativoStudente;
+    @FXML
+    private VBox noteContainer;
+    @FXML
+    private Label classeStudente;
+
+    // Metodo per tornare alla home dello studente
     @FXML
     public void backButtonClicked() throws IOException {
         SceneHandler.getInstance().setStudentHomePage(SceneHandler.getInstance().getUsername());
@@ -34,24 +34,30 @@ public class NoteController {
 
     @FXML
     public void initialize() {
+        // Recupera informazioni dello studente e delle note
         studente = SceneHandler.getInstance().getUsername();
         classe = Database.getInstance().getClasseUser(studente);
         noteStudente = Database.getInstance().getNoteStudente(studente);
-
         nominativoStudente.setText(Database.getInstance().getFullName(studente).toUpperCase());
         classeStudente.setText(classe.toUpperCase());
 
         visualizzaNote();
     }
 
+    // Metodo per visualizzare le note disciplinari
     private void visualizzaNote() {
+        // Controllo se ci sono note disciplinari
         if (!noteStudente.isEmpty() && noteStudente != null) {
+            // Pulisco il container delle note
             noteContainer.getChildren().clear();
+
+            // Genero le etichette per ogni nota
             for (Nota nota : noteStudente)
                 generaLabel(nota);
         }
     }
 
+    // Metodo per generare l'etichetta di una nota disciplinare
     private void generaLabel(Nota nota) {
         BorderPane newBorderPane = new BorderPane();
         Label prof = new Label();
@@ -68,16 +74,13 @@ public class NoteController {
         newBorderPane.setAlignment(newBorderPane.getBottom(), Pos.CENTER);
         newBorderPane.setAlignment(newBorderPane.getCenter(), Pos.CENTER);
 
-        /*aggiungi stile al border pane*/
+        // Aggiungo stili CSS
         newBorderPane.getStyleClass().add("compitiPane");
-        /*aggiungo stile al label nel top*/
         prof.getStyleClass().add("materiaLabel");
-        /*aggiungo stile al label nel center*/
         testo.getStyleClass().add("messageLabel");
-        /*aggiungo stile al label nel bottom*/
         data.getStyleClass().add("dateLabel");
 
-
+        // Aggiungo il BorderPane al container delle note
         noteContainer.getChildren().add(newBorderPane);
     }
 }
