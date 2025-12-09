@@ -15,6 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+
+// Questa classe si occupa di generare i PDF per le valutazioni degli studenti e per l'andamento della classe
+// ATTUALMENTE NON VIENE USATA NELL'APPLICAZIONE PERCHE' E' STATA SPOSTATA LA FUNZIONALITA' DI ESPORTAZIONE
+// NELLA STRUTTURA STRATEGY (PACKAGE EXPORT)
 public class PDFGenerator {
 
     private static PDFGenerator instance;

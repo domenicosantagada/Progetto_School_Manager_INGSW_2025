@@ -11,15 +11,18 @@ import java.io.IOException;
 
 public class SceneHandler {
 
+    // Singleton instance
     private static SceneHandler instance = null;
 
     private Scene scene;
     private Stage stage;
     private String username;
 
+    // Costruttore privato per il singleton
     private SceneHandler() {
     }
 
+    // Metodo per ottenere l'istanza singleton
     public static SceneHandler getInstance() {
         if (instance == null)
             instance = new SceneHandler();
