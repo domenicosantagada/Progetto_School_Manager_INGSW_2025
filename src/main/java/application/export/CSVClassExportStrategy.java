@@ -20,7 +20,7 @@ public class CSVClassExportStrategy implements ClassEvaluationStrategy {
             // Intestazione del file CSV
             writer.append("Cognome;Nome;Data Valutazione;Voto\n");
 
-            // Scrittura dei dati
+            // Scrittura dei dati della classe
             for (StudenteTable studente : studenti) {
                 String votoString = studente.voto() == 0 ? "N.d." : String.valueOf(studente.voto());
                 writer.append(String.format("%s;%s;%s;%s\n",
