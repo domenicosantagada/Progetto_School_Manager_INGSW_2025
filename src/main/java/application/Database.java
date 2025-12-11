@@ -16,10 +16,12 @@ public class Database implements ObservableSubject {
 
     private static final String DB_URL = "jdbc:sqlite:gestionale.db";
 
+    // <<< RIGA AGGIUNTA: passphrase usata da SymmetricCryptoService >>>
+    private static final String CRYPTO_PASSPHRASE = "mia-chiave-segreta-2025";
+
     // Singleton
     private static final Database instance = new Database();
     private Connection connection = null;
-
 
     // Costruttore privato per Singleton
     private Database() {
@@ -27,11 +29,9 @@ public class Database implements ObservableSubject {
         connect();
     }
 
-
     public static Database getInstance() {
         return instance;
     }
-
 
     private void connect() {
         try {
@@ -437,7 +437,8 @@ public class Database implements ObservableSubject {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 String passwordHash = resultSet.getString("password");
-                result = BCryptService.verifyPassword(password, passwordHash);
+                // <<< RIGA MODIFICATA: verifica con SymmetricCryptoService usando la passphrase >>>
+                result = AESGCMCryptoService.verifyPassword(password, passwordHash, CRYPTO_PASSPHRASE);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

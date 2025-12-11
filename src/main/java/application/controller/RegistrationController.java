@@ -1,9 +1,9 @@
 package application.controller;
 
-import application.BCryptService;
 import application.Database;
 import application.MessageDebug;
 import application.SceneHandler;
+import application.AESGCMCryptoService;
 import application.model.Professore;
 import application.model.Studente;
 import application.model.TipologiaClasse;
@@ -68,9 +68,15 @@ public class RegistrationController {
         String codiceIscrizione = this.codiceIscrizione.getText();
         String materia = this.materiaChoiceBox.getValue() == null ? "" : this.materiaChoiceBox.getValue().toString();
 
-        // Password e hashing
+
         String password = this.passwordField.getText();
-        String hashedPassword = BCryptService.hashPassword(password);
+        String hashedPassword;
+        try {
+            hashedPassword = AESGCMCryptoService.encrypt(password, "mia-chiave-segreta-2025");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante la cifratura della password", e);
+        }
 
         // Controlli preliminari sui campi
         if (username.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()
