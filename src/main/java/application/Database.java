@@ -709,7 +709,7 @@ public class Database implements ObservableSubject {
                 SELECT giorno, mese, anno, motivazione, giustificata
                 FROM assenze
                 WHERE studente = ?
-                ORDER BY mese DESC, giorno DESC
+                ORDER BY anno DESC, mese DESC, giorno DESC
                 """;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, studente);

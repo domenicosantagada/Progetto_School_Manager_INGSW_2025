@@ -17,6 +17,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
 public class AssenzeStudenteController implements DataObserver {
@@ -59,7 +60,13 @@ public class AssenzeStudenteController implements DataObserver {
 
     private void loadData() {
         String username = SceneHandler.getInstance().getUsername();
+        // recupero le assenze dello studente
         List<Assenza> assenze = Database.getInstance().getAssenzeStudente(username);
+        // Ordino dalla meno recente alla più recente
+        assenze.sort(Comparator.comparing(Assenza::anno)
+                .thenComparing(Assenza::mese)
+                .thenComparing(Assenza::giorno));
+
         assenzeList.setAll(assenze);
         assenzeTable.setItems(assenzeList);
     }
