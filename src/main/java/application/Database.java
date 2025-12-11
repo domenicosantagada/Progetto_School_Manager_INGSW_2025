@@ -296,6 +296,8 @@ public class Database implements ObservableSubject {
                 giorno INTEGER NOT NULL,
                 mese INTEGER NOT NULL,
                 anno INTEGER NOT NULL,
+                motivazione TEXT DEFAULT 'Assenza non giustificata',
+                giustificata BOOLEAN DEFAULT 0,
                 FOREIGN KEY (studente) REFERENCES user(username),
                 PRIMARY KEY (studente, giorno, mese, anno)
             );
@@ -683,12 +685,14 @@ public class Database implements ObservableSubject {
 
     // Metodo per aggiungere un'assenza di uno studente
     public void addAssenza(Assenza assenza) {
-        String query = "INSERT INTO assenze (studente, giorno, mese, anno) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO assenze (studente, giorno, mese, anno, motivazione, giustificata) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, assenza.username());
             statement.setInt(2, assenza.giorno());
             statement.setInt(3, assenza.mese());
             statement.setInt(4, assenza.anno());
+            statement.setString(5, "Assenza non giustificata");
+            statement.setBoolean(6, false);
             statement.executeUpdate();
 
             // NOTIFICA: Usiamo una stringa generica per le assenze (potrebbe essere migliorata)
@@ -698,11 +702,37 @@ public class Database implements ObservableSubject {
         }
     }
 
+    // Metodo per ottenere tutte le assenze di uno studente
+    public List<Assenza> getAssenzeStudente(String studente) {
+        List<Assenza> assenze = new ArrayList<>();
+        String query = """
+                SELECT giorno, mese, anno, motivazione, giustificata
+                FROM assenze
+                WHERE studente = ?
+                ORDER BY anno DESC, mese DESC, giorno DESC
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, studente);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int giorno = resultSet.getInt("giorno");
+                int mese = resultSet.getInt("mese");
+                int anno = resultSet.getInt("anno");
+                String motivazione = resultSet.getString("motivazione");
+                boolean giustificata = resultSet.getBoolean("giustificata");
+                assenze.add(new Assenza(studente, giorno, mese, anno, motivazione, giustificata));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return assenze;
+    }
+
     // Metodo per ottenere le assenze di uno studente in un mese specifico
     public List<Assenza> getAssenzeStudente(String studente, int m) {
         List<Assenza> assenze = new ArrayList<>();
         String query = """
-                SELECT giorno, mese, anno
+                SELECT giorno, mese, anno, motivazione, giustificata
                 FROM assenze
                 WHERE studente = ? AND mese = ?
                 """;
@@ -714,7 +744,9 @@ public class Database implements ObservableSubject {
                 int giorno = resultSet.getInt("giorno");
                 int mese = resultSet.getInt("mese");
                 int anno = resultSet.getInt("anno");
-                assenze.add(new Assenza(studente, giorno, mese, anno));
+                String motivazione = resultSet.getString("motivazione");
+                boolean giustificata = resultSet.getBoolean("giustificata");
+                assenze.add(new Assenza(studente, giorno, mese, anno, motivazione, giustificata));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -722,7 +754,28 @@ public class Database implements ObservableSubject {
         return assenze;
     }
 
-    //
+    // Metodo per giustificare un'assenza
+    public void justifyAssenza(Assenza assenza, String motivazione) {
+        String query = """
+                UPDATE assenze
+                SET motivazione = ?, giustificata = 1
+                WHERE studente = ? AND giorno = ? AND mese = ? AND anno = ?
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, motivazione);
+            statement.setString(2, assenza.username());
+            statement.setInt(3, assenza.giorno());
+            statement.setInt(4, assenza.mese());
+            statement.setInt(5, assenza.anno());
+            statement.executeUpdate();
+
+            notifyObservers("ASSENZA_GIUSTIFICATA");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Metodo per ottenere le note di uno studente
     public List<Nota> getNoteStudente(String studente) {
         List<Nota> note = new ArrayList<>();
         String query = "SELECT professore, nota, dataInserimento FROM note WHERE studente = ?";
