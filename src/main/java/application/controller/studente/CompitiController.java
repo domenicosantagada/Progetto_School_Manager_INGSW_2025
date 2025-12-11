@@ -3,9 +3,12 @@ package application.controller.studente;
 import application.Database;
 import application.SceneHandler;
 import application.model.CompitoAssegnato;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -14,12 +17,14 @@ import java.util.List;
 
 public class CompitiController {
 
+    public BorderPane caricaElaboratoPane;
+    public BorderPane mainPane;
     private String studente;
     private String classe;
     private List<CompitoAssegnato> compiti = null;
 
     @FXML
-    private VBox compitiContainer; // Assicurati che nel FXML l'fx:id sia "compitiContainer"
+    private VBox compitiContainer;
     @FXML
     private Label classeLabel;
 
@@ -31,6 +36,7 @@ public class CompitiController {
 
     @FXML
     public void initialize() {
+        caricaElaboratoPane.setVisible(false);
         studente = SceneHandler.getInstance().getUsername();
         classe = Database.getInstance().getClasseUser(studente);
         compiti = Database.getInstance().getCompitiClasse(classe);
@@ -89,9 +95,26 @@ public class CompitiController {
             System.out.println("Descrizione: " + comp.descrizione());
             System.out.println("Data inserimento: " + comp.data());
             System.out.println("------------------------------");
+
+            // Mostro il pannello di caricamento elaborato
+            mainPane.setDisable(true);
+            caricaElaboratoPane.setVisible(true);
+            mainPane.setEffect(new GaussianBlur());
         });
 
         // Aggiungo il BorderPane al container dei compiti
         compitiContainer.getChildren().add(newBorderPane);
+    }
+
+    // Metodo per tornare indietro dalla schermata di caricamento elaborato
+
+    public void backFromCaricaElaboratoClicked(MouseEvent mouseEvent) {
+        caricaElaboratoPane.setVisible(false);
+        mainPane.setVisible(true);
+        mainPane.setEffect(null);
+        mainPane.setDisable(false);
+    }
+
+    public void addAssenzaClicked(ActionEvent actionEvent) {
     }
 }
