@@ -3,12 +3,12 @@
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<StackPane xmlns="http://javafx.com/javafx/21.0.1"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="application.controller.studente.CompitiController"
-           prefHeight="760" prefWidth="1050">
+<StackPane prefHeight="760" prefWidth="1050" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="application.controller.studente.CompitiController">
 
     <stylesheets>
         <URL value="@../../css/assenze.css"/>
@@ -45,8 +45,8 @@
                                 <HBox prefHeight="50.0" prefWidth="1050.0" spacing="40.0"
                                       BorderPane.alignment="TOP_RIGHT">
                                     <children>
-                                        <FontAwesomeIcon styleClass="iconaFreccia" iconName="ARROW_LEFT" size="30"
-                                                         onMouseClicked="#backButtonClicked">
+                                        <FontAwesomeIcon iconName="ARROW_LEFT" onMouseClicked="#backButtonClicked"
+                                                         size="30" styleClass="iconaFreccia">
                                             <HBox.margin>
                                                 <Insets left="5.0" top="5.0"/>
                                             </HBox.margin>
@@ -59,7 +59,7 @@
                 </BorderPane>
             </top>
             <center>
-                <ScrollPane styleClass="scrollPane" fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="scrollPane" BorderPane.alignment="CENTER">
                     <content>
                         <BorderPane>
                             <center>
@@ -73,17 +73,17 @@
                         </BorderPane>
                     </content>
                     <BorderPane.margin>
-                        <Insets bottom="20.0" top="20.0" right="20" left="20"/>
+                        <Insets bottom="20.0" left="20" right="20" top="20.0"/>
                     </BorderPane.margin>
                 </ScrollPane>
             </center>
         </BorderPane>
         <BorderPane fx:id="caricaElaboratoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="mainPane">
+                    minWidth="-Infinity" prefHeight="419.0" prefWidth="689.0" styleClass="mainPane">
             <top>
                 <BorderPane prefHeight="118.0" prefWidth="600.0" styleClass="topPane" BorderPane.alignment="CENTER">
                     <bottom>
-                        <Label styleClass="titolo" text="Inserisci assenza" BorderPane.alignment="CENTER">
+                        <Label styleClass="titolo" text="Carica elaborato" BorderPane.alignment="CENTER">
                             <BorderPane.margin>
                                 <Insets bottom="20.0"/>
                             </BorderPane.margin>
@@ -94,8 +94,7 @@
                               BorderPane.alignment="CENTER">
                             <children>
                                 <FontAwesomeIcon iconName="ARROW_LEFT" onMouseClicked="#backFromCaricaElaboratoClicked"
-                                                 size="30"
-                                                 styleClass="iconaFreccia">
+                                                 size="30" styleClass="iconaFreccia" text="">
                                     <HBox.margin>
                                         <Insets right="5.0" top="5.0"/>
                                     </HBox.margin>
@@ -109,17 +108,41 @@
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0"
                       BorderPane.alignment="CENTER">
                     <children>
-                        <ChoiceBox fx:id="studenteChoice" prefHeight="34.0" prefWidth="213.0"/>
-                        <DatePicker fx:id="dataAssenza" prefHeight="34.0" prefWidth="213.0"/>
-                        <Button fx:id="assenzaButton" mnemonicParsing="false" onAction="#addAssenzaClicked"
-                                styleClass="buttons" text="Inserisci">
-                            <VBox.margin>
-                                <Insets top="30.0"/>
-                            </VBox.margin>
-                        </Button>
+                        <Label fx:id="materiaLabeld" styleClass="materiaLabel" text="Materia"/>
+                        <Label fx:id="argomentoLabel" styleClass="messageLabel" text="Argomento"/>
+                        <TextArea fx:id="commentoArea" prefHeight="113.0" prefWidth="511.0"
+                                  promptText="Commento (opzionale)"/>
                     </children>
+                    <BorderPane.margin>
+                        <Insets left="20.0" top="10.0"/>
+                    </BorderPane.margin>
                 </VBox>
             </center>
+            <bottom>
+                <Button fx:id="inviaElaboratoButton" mnemonicParsing="false" onAction="#inviaElaboratoClicked"
+                        prefHeight="40.0" prefWidth="83.0" styleClass="buttons" text="Invia"
+                        BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" top="20.0"/>
+                    </BorderPane.margin>
+                </Button>
+            </bottom>
+            <right>
+                <Button mnemonicParsing="false" styleClass="compitiPane" onAction="#caricaRisorsaClicked"
+                        BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </BorderPane.margin>
+                    <graphic>
+                        <ImageView fx:id="caricaRisorsaButton" fitHeight="85.0" fitWidth="84.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@../../icon/file.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </right>
         </BorderPane>
     </children>
 </StackPane>

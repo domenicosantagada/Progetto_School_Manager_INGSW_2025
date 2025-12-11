@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -19,6 +20,9 @@ public class CompitiController {
 
     public BorderPane caricaElaboratoPane;
     public BorderPane mainPane;
+    public Label materiaLabeld;
+    public Label argomentoLabel;
+    public TextArea commentoArea;
     private String studente;
     private String classe;
     private List<CompitoAssegnato> compiti = null;
@@ -100,6 +104,11 @@ public class CompitiController {
             mainPane.setDisable(true);
             caricaElaboratoPane.setVisible(true);
             mainPane.setEffect(new GaussianBlur());
+            caricaElaboratoPane.requestFocus();
+
+            // Imposto le etichette nel pannello di caricamento elaborato
+            materiaLabeld.setText(comp.materia().toUpperCase());
+            argomentoLabel.setText(comp.descrizione());
         });
 
         // Aggiungo il BorderPane al container dei compiti
@@ -107,7 +116,6 @@ public class CompitiController {
     }
 
     // Metodo per tornare indietro dalla schermata di caricamento elaborato
-
     public void backFromCaricaElaboratoClicked(MouseEvent mouseEvent) {
         caricaElaboratoPane.setVisible(false);
         mainPane.setVisible(true);
@@ -115,6 +123,13 @@ public class CompitiController {
         mainPane.setDisable(false);
     }
 
-    public void addAssenzaClicked(ActionEvent actionEvent) {
+    // Metodo per inviare l'elaborato
+    public void inviaElaboratoClicked(ActionEvent actionEvent) {
+        System.out.println("Elaborato inviato!");
+        backFromCaricaElaboratoClicked(null);
+    }
+
+    public void caricaRisorsaClicked(ActionEvent actionEvent) {
+        System.out.println("Carica risorsa cliccato!");
     }
 }
