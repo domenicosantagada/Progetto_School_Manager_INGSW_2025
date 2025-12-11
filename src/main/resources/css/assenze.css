@@ -178,3 +178,28 @@
     -fx-background-radius: 10px;
 }
 
+
+.compitiPane {
+    /* Arrotondamento bordi */
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+
+    /* Spaziatura interna */
+    -fx-padding: 15px;
+
+    /* Colore di sfondo: es. un azzurro chiaro che richiama il tema, oppure un giallo tenue */
+    -fx-background-color: #E3F2FD;
+
+    /* Bordo colorato (il blu del tuo tema) */
+    -fx-border-color: #1976D2;
+    -fx-border-width: 2px;
+
+    /* Ombra esterna per dare profondità (effetto "card") */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+/* Effetto quando passi sopra con il mouse (opzionale) */
+.compitiPane:hover {
+    -fx-background-color: #BBDEFB; /* Diventa leggermente più scuro */
+    -fx-cursor: hand;
+}

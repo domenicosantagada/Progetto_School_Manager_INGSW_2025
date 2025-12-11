@@ -40,6 +40,12 @@ public class HomeProfController {
     }
 
     @FXML
+    public void consegneClicked(ActionEvent actionEvent) throws IOException {
+        // Apre la sezione dedicata alle consegne degli studenti
+        SceneHandler.getInstance().setConsegnePage();
+    }
+
+    @FXML
     public void logoutClicked(ActionEvent actionEvent) throws IOException {
         // Effettua il logout e ritorna alla schermata di login
         SceneHandler.getInstance().setLoginPage();
@@ -59,4 +65,6 @@ public class HomeProfController {
         String materiaProfText = Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername());
         materiaProf.setText(materiaProfText.toUpperCase());
     }
+
+
 }

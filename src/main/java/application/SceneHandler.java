@@ -126,4 +126,9 @@ public class SceneHandler {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/studente/NoteStudentPage.fxml"));
         loadPage(loader);
     }
+
+    public void setConsegnePage() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/prof/ConsegneProfPage.fxml"));
+        loadPage(loader);
+    }
 }
