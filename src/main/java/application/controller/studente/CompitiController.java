@@ -12,7 +12,9 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -130,6 +132,22 @@ public class CompitiController {
     }
 
     public void caricaRisorsaClicked(ActionEvent actionEvent) {
-        System.out.println("Carica risorsa cliccato!");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Scegli un file PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File PDF", "*.pdf"));
+
+        // Cartella iniziale: "Esempio PDF esportati" nella root del progetto
+        File projectRoot = new File(System.getProperty("user.dir"));
+        File initialDir = new File(projectRoot, "Esempio PDF esportati");
+        if (!initialDir.exists()) {
+            initialDir.mkdirs(); // crea la cartella se non esiste
+        }
+        fileChooser.setInitialDirectory(initialDir);
+
+        // Ottieni lo stage dalla scena del mainPane
+        File selectedFile = fileChooser.showOpenDialog((javafx.stage.Window) mainPane.getScene().getWindow());
+        if (selectedFile != null) {
+            System.out.println("File scelto: " + selectedFile.getAbsolutePath());
+        }
     }
 }
