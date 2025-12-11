@@ -220,6 +220,23 @@ public class AssenzeController {
         // Aggiungo la label allo StackPane
         cellaColorata.getChildren().add(testoLabel);
 
+        // Context Menu per eliminare l'assenza
+        javafx.scene.control.ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
+        javafx.scene.control.MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Assenza");
+        deleteItem.setOnAction(e -> {
+            // Recupero lo studente corretto in base alla posizione
+            StudenteTable studente = studenti.get(posizione);
+            Database.getInstance().deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
+            SceneHandler.getInstance().showInformation("Assenza eliminata correttamente.");
+
+            // Rimuovo la cella colorata dalla griglia
+            calendarioGrid.getChildren().remove(cellaColorata);
+        });
+        contextMenu.getItems().add(deleteItem);
+
+        // Associa il ContextMenu alla cella
+        cellaColorata.setOnContextMenuRequested(e -> contextMenu.show(cellaColorata, e.getScreenX(), e.getScreenY()));
+
         // Aggiungo la cella alla griglia
         calendarioGrid.add(cellaColorata, giorno, posizione + 1);
     }

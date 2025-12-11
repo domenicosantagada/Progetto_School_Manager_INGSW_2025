@@ -903,4 +903,18 @@ public class Database implements ObservableSubject {
         }
         return elaborati;
     }
+
+    public void deleteAssenza(String studente, int giorno, int mese, int anno) {
+        String query = "DELETE FROM assenze WHERE studente = ? AND giorno = ? AND mese = ? AND anno = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, studente);
+            statement.setInt(2, giorno);
+            statement.setInt(3, mese);
+            statement.setInt(4, anno);
+            statement.executeUpdate();
+            notifyObservers("ASSENZA_ELIMINATA");
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione dell'assenza: " + e.getMessage(), e);
+        }
+    }
 }
