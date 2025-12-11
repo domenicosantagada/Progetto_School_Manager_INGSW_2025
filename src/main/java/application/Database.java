@@ -191,6 +191,7 @@ public class Database implements ObservableSubject {
             statement.executeUpdate(CREATE_NOTE_TABLE);
             statement.executeUpdate(CREATE_COMPITI_TABLE);
             statement.executeUpdate(CREATE_ASSENZE_TABLE);
+            statement.executeUpdate(CREATE_ELABORATI_TABLE);
         } catch (SQLException e) {
             System.out.println("Creazione tabelle fallita: " + e.getMessage());
         }
@@ -300,6 +301,20 @@ public class Database implements ObservableSubject {
                 giustificata BOOLEAN DEFAULT 0,
                 FOREIGN KEY (studente) REFERENCES user(username),
                 PRIMARY KEY (studente, giorno, mese, anno)
+            );
+            """;
+
+    // Metodo per creare la tabella elaboratiCaricati nel database
+    private static final String CREATE_ELABORATI_TABLE = """
+            CREATE TABLE IF NOT EXISTS elaboratiCaricati (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                compitoId INTEGER NOT NULL,
+                studente TEXT NOT NULL,
+                data TEXT NOT NULL,
+                commento TEXT,
+                file BLOB,
+                FOREIGN KEY (compitoId) REFERENCES compiti(id),
+                FOREIGN KEY (studente) REFERENCES user(username)
             );
             """;
 
@@ -637,7 +652,7 @@ public class Database implements ObservableSubject {
     public List<CompitoAssegnato> getCompitiClasse(String classe) {
         List<CompitoAssegnato> compiti = new ArrayList<>();
         String query = """
-                SELECT professore, materia, data, descrizione, classe
+                SELECT id, professore, materia, data, descrizione, classe
                 FROM compiti
                 WHERE classe = ?
                 """;
@@ -645,12 +660,13 @@ public class Database implements ObservableSubject {
             statement.setString(1, classe);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String professore = resultSet.getString("professore");
                 String materia = resultSet.getString("materia");
                 String data = resultSet.getString("data");
                 String descrizione = resultSet.getString("descrizione");
                 String classeCompito = resultSet.getString("classe");
-                compiti.add(new CompitoAssegnato(professore, materia, data, descrizione, classeCompito));
+                compiti.add(new CompitoAssegnato(id, professore, materia, data, descrizione, classeCompito));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -811,6 +827,24 @@ public class Database implements ObservableSubject {
         return result;
     }
 
+    // Metodo per inserire un elaborato caricato da uno studente
+    public boolean insertElaborato(ElaboratoCaricato elaborato) {
+        String query = "INSERT INTO elaboratiCaricati (compitoId, studente, data, commento, file) VALUES (?, ?, ?, ?, ?)";
+        boolean result = false;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, elaborato.compito().id());
+            statement.setString(2, elaborato.studente());
+            statement.setString(3, elaborato.data());
+            statement.setString(4, elaborato.commento());
+            statement.setBytes(5, elaborato.file());
+            statement.executeUpdate();
+            result = true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
     // === IMPLEMENTAZIONE OBSERVER PATTERN (Soggetto Concreto) ===
 
     @Override
@@ -831,5 +865,42 @@ public class Database implements ObservableSubject {
         for (DataObserver observer : observers) {
             observer.update(event);
         }
+    }
+
+    // Metodo per ottenere gli elaborati di un compito
+    public List<ElaboratoCaricato> getElaboratiCompito(int compitoId) {
+        List<ElaboratoCaricato> elaborati = new ArrayList<>();
+        String query = """
+                SELECT ec.studente, ec.data, ec.commento, ec.file,
+                       c.id as compitoId, c.professore, c.materia, c.data as dataCompito, c.descrizione, c.classe
+                FROM elaboratiCaricati ec
+                JOIN compiti c ON ec.compitoId = c.id
+                WHERE ec.compitoId = ?
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, compitoId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                // Ricostruisco l'oggetto CompitoAssegnato
+                CompitoAssegnato compito = new CompitoAssegnato(
+                        resultSet.getInt("compitoId"),
+                        resultSet.getString("professore"),
+                        resultSet.getString("materia"),
+                        resultSet.getString("dataCompito"),
+                        resultSet.getString("descrizione"),
+                        resultSet.getString("classe")
+                );
+
+                String studente = resultSet.getString("studente");
+                String data = resultSet.getString("data");
+                String commento = resultSet.getString("commento");
+                byte[] file = resultSet.getBytes("file");
+
+                elaborati.add(new ElaboratoCaricato(compito, studente, data, commento, file));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elaborati;
     }
 }

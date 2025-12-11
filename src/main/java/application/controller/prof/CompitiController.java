@@ -43,6 +43,7 @@ public class CompitiController {
             // Creo un nuovo oggetto CompitoAssegnato con i dati correnti:
             // username del docente, materia, data odierna formattata, descrizione e classe
             CompitoAssegnato compito = new CompitoAssegnato(
+                    -1, // ID non ancora assegnato
                     SceneHandler.getInstance().getUsername(),
                     materia,
                     LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString(),

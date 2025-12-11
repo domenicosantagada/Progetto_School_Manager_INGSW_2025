@@ -79,7 +79,7 @@
                         <Button fx:id="consegneButton" mnemonicParsing="false" onAction="#consegneClicked"
                                 prefHeight="325.0" prefWidth="535.0" text="  Consegne" GridPane.columnIndex="2">
                             <graphic>
-                                <FontAwesomeIcon fill="#1976D2" iconName="FILE_TEXT" size="60"/>
+                                <FontAwesomeIcon fill="#1976D2" iconName="PAPERCLIP" size="60"/>
                             </graphic>
                             <font>
                                 <Font size="20.0"/>

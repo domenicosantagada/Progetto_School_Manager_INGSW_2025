@@ -3,6 +3,7 @@ package application.controller.studente;
 import application.Database;
 import application.SceneHandler;
 import application.model.CompitoAssegnato;
+import application.model.ElaboratoCaricato;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -16,6 +17,9 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CompitiController {
@@ -28,6 +32,8 @@ public class CompitiController {
     private String studente;
     private String classe;
     private List<CompitoAssegnato> compiti = null;
+    private CompitoAssegnato selectedCompito; // Per tenere traccia del compito selezionato
+    private File selectedFile; // Per tenere traccia del file selezionato
 
     @FXML
     private VBox compitiContainer;
@@ -102,6 +108,10 @@ public class CompitiController {
             System.out.println("Data inserimento: " + comp.data());
             System.out.println("------------------------------");
 
+            selectedCompito = comp; // Salvo il compito selezionato
+            selectedFile = null; // Resetta il file selezionato
+            commentoArea.setText(""); // Resetta il commento
+
             // Mostro il pannello di caricamento elaborato
             mainPane.setDisable(true);
             caricaElaboratoPane.setVisible(true);
@@ -123,12 +133,43 @@ public class CompitiController {
         mainPane.setVisible(true);
         mainPane.setEffect(null);
         mainPane.setDisable(false);
+        selectedCompito = null;
+        selectedFile = null;
     }
 
     // Metodo per inviare l'elaborato
     public void inviaElaboratoClicked(ActionEvent actionEvent) {
-        System.out.println("Elaborato inviato!");
-        backFromCaricaElaboratoClicked(null);
+        if (selectedFile == null) {
+            SceneHandler.getInstance().showWarning("Devi selezionare un file PDF per l'elaborato.");
+            return;
+        }
+
+        try {
+            byte[] fileContent = Files.readAllBytes(selectedFile.toPath());
+            String commento = commentoArea.getText();
+            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            ElaboratoCaricato elaborato = new ElaboratoCaricato(
+                    selectedCompito,
+                    studente,
+                    data,
+                    commento,
+                    fileContent
+            );
+
+            boolean success = Database.getInstance().insertElaborato(elaborato);
+            if (success) {
+                SceneHandler.getInstance().showInformation("Elaborato inviato con successo!");
+                System.out.println("Elaborato inviato!");
+                backFromCaricaElaboratoClicked(null);
+            } else {
+                SceneHandler.getInstance().showWarning("Errore durante l'invio dell'elaborato.");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            SceneHandler.getInstance().showWarning("Errore durante la lettura del file: " + e.getMessage());
+        }
     }
 
     public void caricaRisorsaClicked(ActionEvent actionEvent) {
@@ -145,7 +186,7 @@ public class CompitiController {
         fileChooser.setInitialDirectory(initialDir);
 
         // Ottieni lo stage dalla scena del mainPane
-        File selectedFile = fileChooser.showOpenDialog((javafx.stage.Window) mainPane.getScene().getWindow());
+        selectedFile = fileChooser.showOpenDialog((javafx.stage.Window) mainPane.getScene().getWindow());
         if (selectedFile != null) {
             System.out.println("File scelto: " + selectedFile.getAbsolutePath());
         }
