@@ -21,9 +21,10 @@
                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <center>
                 <GridPane fx:id="gridPane" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                          minWidth="-Infinity" prefHeight="452.0" prefWidth="694.0" vgap="20.0"
+                          minWidth="-Infinity" prefHeight="450.0" prefWidth="950.0" vgap="20.0"
                           BorderPane.alignment="CENTER">
                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                     </columnConstraints>
@@ -66,10 +67,19 @@
                             </font>
                         </Button>
                         <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutClicked"
-                                prefHeight="327.0" prefWidth="534.0" text="  Esci" GridPane.columnIndex="1"
+                                prefHeight="327.0" prefWidth="534.0" text="  Esci" GridPane.columnIndex="2"
                                 GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                             <graphic>
                                 <FontAwesomeIcon fill="#1976D2" iconName="SIGN_OUT" size="60"/>
+                            </graphic>
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                        <Button fx:id="consegneButton" mnemonicParsing="false" onAction="#consegneClicked"
+                                prefHeight="325.0" prefWidth="535.0" text="  Consegne" GridPane.columnIndex="2">
+                            <graphic>
+                                <FontAwesomeIcon fill="#1976D2" iconName="FILE_TEXT" size="60"/>
                             </graphic>
                             <font>
                                 <Font size="20.0"/>
@@ -128,8 +138,8 @@
                         </HBox>
                     </top>
                     <center>
-                        <ImageView fx:id="logoView" fitHeight="150.0" pickOnBounds="true"
-                                   preserveRatio="true" BorderPane.alignment="CENTER">
+                        <ImageView fx:id="logoView" fitHeight="150.0" pickOnBounds="true" preserveRatio="true"
+                                   BorderPane.alignment="CENTER">
                             <image>
                                 <!--<Image url="@./"/>-->
                             </image>
