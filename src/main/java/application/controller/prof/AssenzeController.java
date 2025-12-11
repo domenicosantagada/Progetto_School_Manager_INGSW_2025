@@ -182,7 +182,7 @@ public class AssenzeController {
             StudenteTable studente = studenti.get(posizione);
 
             // Creo una nuova assenza e la aggiungo al database
-            Assenza assenza = new Assenza(studente.username(), dataAssenza.getValue().getDayOfMonth(), dataAssenza.getValue().getMonthValue(), dataAssenza.getValue().getYear());
+            Assenza assenza = new Assenza(studente.username(), dataAssenza.getValue().getDayOfMonth(), dataAssenza.getValue().getMonthValue(), dataAssenza.getValue().getYear(), "Assenza non giustificata", false);
             Database.getInstance().addAssenza(assenza);
 
             // Coloro la cella corrispondente alla nuova assenza nel calendario
@@ -192,7 +192,7 @@ public class AssenzeController {
             // (opzionale: in questo caso se voglio aggiungere più assenze di seguito
             // devo riaprire il pannello di aggiunta assenza)
             backUpdateClicked();
-            
+
         } catch (Exception e) {
             System.out.println("Errore nell'aggiunta dell'assenza");
         }

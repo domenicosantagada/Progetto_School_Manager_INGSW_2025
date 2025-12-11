@@ -78,6 +78,11 @@ public class SceneHandler {
         loadPage(loader);
     }
 
+    public void setAssenzeStudentePage() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/studente/AssenzeStudentePage.fxml"));
+        loadPage(loader);
+    }
+
     private void loadPopUp(Alert alert, String title, String message) {
         alert.initOwner(stage);
         alert.setTitle(title);
