@@ -38,6 +38,12 @@ public class HomeStudentController {
         SceneHandler.getInstance().setNotePage();
     }
 
+    // Metodo per mostrare la pagina delle assenze dello studente
+    public void assenzeClicked(ActionEvent actionEvent) throws IOException {
+        // Naviga alla pagina delle assenze dello studenteq
+        SceneHandler.getInstance().setAssenzeStudentePage();
+    }
+
     // Metodo per effettuare il logout dello studente
     @FXML
     public void logoutClicked(ActionEvent actionEvent) throws IOException {

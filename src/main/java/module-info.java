@@ -5,6 +5,8 @@ module com.example.registroelettronico {
     requires fontawesomefx;
     requires itextpdf;
     requires jbcrypt;
+    requires javafx.graphics;
+    requires javafx.base;
 
     opens application to javafx.fxml;
     exports application;
