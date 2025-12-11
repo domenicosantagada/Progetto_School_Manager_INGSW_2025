@@ -19,7 +19,7 @@ public class CompitiController {
     private List<CompitoAssegnato> compiti = null;
 
     @FXML
-    private VBox votiContainer;
+    private VBox compitiContainer; // Assicurati che nel FXML l'fx:id sia "compitiContainer"
     @FXML
     private Label classeLabel;
 
@@ -42,10 +42,10 @@ public class CompitiController {
     // Metodo per visualizzare i compiti assegnati
     private void visualizzaCompiti() {
         // Controllo se ci sono compiti assegnati
-        if (!compiti.isEmpty() && compiti != null) {
+        if (compiti != null && !compiti.isEmpty()) {
 
             // Pulisco il container dei compiti
-            votiContainer.getChildren().clear();
+            compitiContainer.getChildren().clear();
 
             // Genero le etichette per ogni compito
             for (CompitoAssegnato comp : compiti)
@@ -71,6 +71,10 @@ public class CompitiController {
 
         // Aggiungo stile al BorderPane
         newBorderPane.getStyleClass().add("compitiPane");
+
+        // Aggiungo stile per il cursore (opzionale, per far capire che è cliccabile)
+        newBorderPane.setStyle("-fx-cursor: hand;");
+
         // Aggiungo stile al label nel top
         materia.getStyleClass().add("materiaLabel");
         // Aggiungo stile al label nel center
@@ -78,7 +82,16 @@ public class CompitiController {
         // Aggiungo stile al label nel bottom
         date.getStyleClass().add("dateLabel");
 
-        // Aggiungo il BorderPane al container dei voti
-        votiContainer.getChildren().add(newBorderPane);
+        // [MODIFICA] Aggiungo l'evento di click per stampare le info sul terminale
+        newBorderPane.setOnMouseClicked(event -> {
+            System.out.println("Hai cliccato sul compito di: " + comp.materia());
+            System.out.println("Professore: " + comp.prof());
+            System.out.println("Descrizione: " + comp.descrizione());
+            System.out.println("Data inserimento: " + comp.data());
+            System.out.println("------------------------------");
+        });
+
+        // Aggiungo il BorderPane al container dei compiti
+        compitiContainer.getChildren().add(newBorderPane);
     }
 }

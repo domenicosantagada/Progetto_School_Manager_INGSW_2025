@@ -63,7 +63,7 @@
             <content>
                 <BorderPane>
                     <center>
-                        <VBox fx:id="votiContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+                        <VBox fx:id="compitiContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>
