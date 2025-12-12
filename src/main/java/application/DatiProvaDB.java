@@ -20,18 +20,24 @@ public class DatiProvaDB {
             "Arte", "Educazione Fisica", "Religione", "Tecnologia", "Musica"
     };
 
+    private static final String[] CLASSI = {
+            "1A", "2A", "3A", "4A", "5A"
+    };
+
     private static final String[] NOMI = {
             "Alessandro", "Sofia", "Lorenzo", "Giulia", "Francesco",
             "Aurora", "Leonardo", "Alice", "Matteo", "Ginevra",
             "Andrea", "Emma", "Gabriele", "Giorgia", "Riccardo",
-            "Beatrice", "Tommaso", "Greta", "Edoardo", "Vittoria"
+            "Beatrice", "Tommaso", "Greta", "Edoardo", "Vittoria",
+            "Federico", "Martina", "Michele", "Chiara", "Antonio"
     };
 
     private static final String[] COGNOMI = {
             "Rossi", "Russo", "Ferrari", "Esposito", "Bianchi",
             "Romano", "Colombo", "Ricci", "Marino", "Greco",
             "Bruno", "Gallo", "Conti", "De Luca", "Mancini",
-            "Costa", "Giordano", "Rizzo", "Lombardi", "Moretti"
+            "Costa", "Giordano", "Rizzo", "Lombardi", "Moretti",
+            "Barbieri", "Fontana", "Santoro", "Mariani", "Rinaldi"
     };
 
     public static void main(String[] args) {
@@ -44,7 +50,7 @@ public class DatiProvaDB {
         System.out.println("--- Inizio popolamento DB massivo ---");
 
         insertMaterie();
-        insertCodiciClasse();
+        insertCodiciClasse(); // Logica codici invariata
         insertUtentiProva(db);
         insertCompitiMassivi(db);
         insertAssenzeMassive(db);
@@ -63,75 +69,75 @@ public class DatiProvaDB {
     private static void insertCompitiMassivi(Database db) {
         System.out.println("--- Inserimento Compiti ---");
 
-        // MATEMATICA (prof1)
+        // --- MATEMATICA (prof1) ---
+        // Biennio
         db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-10", "Esercizi pag. 45 n. 1, 2, 3 (Equazioni)", "1A"));
         db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-24", "Studio del segno della parabola", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-12", "Esercizi sulle disequazioni fratte", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-28", "Problemi di geometria analitica", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-05", "Verifica scritta sul trimestre", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-19", "Esercizi di ripasso vacanze natalizie", "1A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-12", "Esercizi sulle disequazioni fratte", "2A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-28", "Problemi di geometria analitica", "2A"));
+        // Triennio (Nuovi inserimenti)
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-15", "Goniometria: Formule di addizione", "3A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-05", "Verifica su esponenziali e logaritmi", "4A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-01", "Studio di funzione: limiti e derivate", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-15", "Simulazione seconda prova esame di stato", "5A"));
 
-        // ITALIANO (prof2)
+
+        // --- ITALIANO (prof2) ---
         db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-15", "Parafrasi canto I dell'Inferno", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-29", "Saggio breve: 'I social network e i giovani'", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-10", "Leggere capitoli 1-8 dei Promessi Sposi", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-25", "Analisi del testo poetico: Leopardi", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-12-15", "Tema in classe: attualità", "1A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-18", "Analisi del testo: 'La coscienza di Zeno'", "2A"));
+        // Triennio
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-20", "Il Decameron: riassunto novelle scelte", "3A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-25", "Illuminismo e Parini: 'Il Giorno'", "4A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-12-10", "Leopardi: Analisi de 'L'Infinito' e pessimismo cosmico", "5A"));
 
-        // INGLESE (prof3)
+
+        // --- INGLESE (prof3) ---
         db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-10-18", "Grammar: Present Perfect vs Past Simple", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-11-15", "Write an essay about Global Warming (200 words)", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-10", "Literature: Shakespeare's Macbeth summary", "1A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-10", "Literature: Shakespeare's Macbeth summary", "2A"));
+        // Triennio
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-11-05", "The Victorian Age: Dickens and social reforms", "4A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-02", "Modernism: James Joyce and Stream of Consciousness", "5A"));
 
-        // STORIA (prof4)
+
+        // --- STORIA (prof4) ---
         db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-10-20", "Studiare la Rivoluzione Francese (pag. 120-140)", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-11-22", "Approfondimento su Napoleone Bonaparte", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-12", "I moti rivoluzionari del 1848", "1A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-12", "I moti rivoluzionari del 1848", "2A"));
+        // Triennio
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-11-15", "La Prima Guerra Mondiale: cause e conseguenze", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-18", "Il Fascismo e le leggi razziali", "5A"));
 
-        // SCIENZE (prof5)
-        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-10-25", "Relazione sull'esperimento di chimica in laboratorio", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-11-30", "Ricerca sulle energie rinnovabili", "1A"));
-
-        // ARTE (prof6)
-        db.insertCompito(new CompitoAssegnato(0, "prof6", "Arte", "2025-11-05", "Tavola 4: Prospettiva centrale di una stanza", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof6", "Arte", "2025-12-02", "Analisi dell'opera 'La Gioconda'", "1A"));
-
-        System.out.println("[OK] Oltre 20 compiti inseriti per diverse materie.");
+        // --- SCIENZE (prof5) ---
+        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-10-22", "La tettonica delle placche", "3A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-11-10", "Chimica Organica: Alcani e Alcheni", "5A"));
     }
 
     private static void insertAssenzeMassive(Database db) {
         System.out.println("--- Inserimento Assenze ---");
 
-        // Helper per aggiungere assenze rapidamente
-        // Parametri: studente, giorno, mese, motivazione (se null = non giustificata)
-
-        // STUDENTE 1 (Molte assenze, alcune giustificate)
-        addAssenzaHelper(db, "stud1", 5, 10, "Visita dentistica"); // Giustificata
-        addAssenzaHelper(db, "stud1", 6, 10, "Postumi intervento dentistico"); // Giustificata
-        addAssenzaHelper(db, "stud1", 20, 10, null); // NON Giustificata
-        addAssenzaHelper(db, "stud1", 15, 11, "Febbre alta"); // Giustificata
-        addAssenzaHelper(db, "stud1", 16, 11, "Convalescenza"); // Giustificata
-        addAssenzaHelper(db, "stud1", 17, 11, "Convalescenza"); // Giustificata
-        addAssenzaHelper(db, "stud1", 5, 12, null); // NON Giustificata
-
-        // STUDENTE 2 (Qualche assenza strategica)
+        // CLASSE 1A (stud1 - stud5)
+        addAssenzaHelper(db, "stud1", 5, 10, "Visita dentistica");
+        addAssenzaHelper(db, "stud1", 20, 10, null); // Ingiustificata
         addAssenzaHelper(db, "stud2", 12, 10, "Motivi familiari");
-        addAssenzaHelper(db, "stud2", 31, 10, null); // Ponte non ufficiale?
-        addAssenzaHelper(db, "stud2", 28, 11, "Gara sportiva regionale");
 
-        // STUDENTE 3 (Poche assenze)
-        addAssenzaHelper(db, "stud3", 10, 12, "Visita specialistica");
+        // CLASSE 2A (stud6 - stud10)
+        addAssenzaHelper(db, "stud6", 15, 11, "Influenza");
+        addAssenzaHelper(db, "stud6", 16, 11, "Convalescenza");
+        addAssenzaHelper(db, "stud7", 02, 12, null); // Ingiustificata
 
-        // STUDENTE 4 (Assenze sparse)
-        addAssenzaHelper(db, "stud4", 15, 10, null);
-        addAssenzaHelper(db, "stud4", 18, 11, "Sciopero dei mezzi pubblici"); // Giustificata
-        addAssenzaHelper(db, "stud4", 19, 11, null);
+        // CLASSE 3A (stud11 - stud15)
+        addAssenzaHelper(db, "stud11", 10, 10, "Visita sportiva agonistica");
+        addAssenzaHelper(db, "stud13", 14, 11, null); // Ritardo?
 
-        // STUDENTE 5
-        addAssenzaHelper(db, "stud5", 22, 10, "Indisposizione");
-        addAssenzaHelper(db, "stud5", 23, 10, "Indisposizione");
+        // CLASSE 4A (stud16 - stud20)
+        addAssenzaHelper(db, "stud16", 20, 11, "Rinnovo patente/documenti");
+        addAssenzaHelper(db, "stud18", 05, 12, "Sciopero treni");
 
-        System.out.println("[OK] Assenze multiple inserite per 5 studenti.");
+        // CLASSE 5A (stud21 - stud25)
+        addAssenzaHelper(db, "stud21", 01, 10, "Orientamento universitario");
+        addAssenzaHelper(db, "stud21", 02, 10, "Orientamento universitario");
+        addAssenzaHelper(db, "stud25", 22, 12, "Partenza anticipata vacanze"); // Giustificata dai genitori
+
+        System.out.println("[OK] Assenze distribuite su tutte le classi.");
     }
 
     private static void addAssenzaHelper(Database db, String stud, int g, int m, String motivazione) {
@@ -139,7 +145,6 @@ public class DatiProvaDB {
         db.addAssenza(a); // Inserisce come NON giustificata
 
         if (motivazione != null) {
-            // Se c'è una motivazione, la giustifichiamo subito
             db.justifyAssenza(a, motivazione);
         }
     }
@@ -159,7 +164,7 @@ public class DatiProvaDB {
             User userProf = new User(
                     username, nome, cognome,
                     BCryptService.hashPassword(commonPassword),
-                    "1978-05-20"
+                    "20-01-1980"
             );
             Professore professore = new Professore(userProf, "1A", materia);
 
@@ -169,9 +174,16 @@ public class DatiProvaDB {
             profIndex++;
         }
 
-        // STUDENTI (10 studenti)
-        for (int i = 1; i <= 10; i++) {
-            String username = "stud" + i;
+        // STUDENTI (25 studenti totali, 5 per ogni classe)
+        // stud1-5 -> 1A, stud6-10 -> 2A, stud11-15 -> 3A, etc.
+        for (int i = 0; i < 25; i++) {
+            int studentNum = i + 1;
+            String username = "stud" + studentNum;
+
+            // Determina la classe in base all'indice (gruppi di 5)
+            // 0-4 -> index 0 (1A), 5-9 -> index 1 (2A)...
+            String classeAssegnata = CLASSI[i / 5];
+
             String nome = NOMI[nameIndex % NOMI.length];
             String cognome = COGNOMI[nameIndex % COGNOMI.length];
             nameIndex++;
@@ -181,10 +193,11 @@ public class DatiProvaDB {
                     BCryptService.hashPassword(commonPassword),
                     "2007-03-15"
             );
-            Studente studente = new Studente(userStud, "1A");
+            Studente studente = new Studente(userStud, classeAssegnata);
 
             if (!db.usernameUtilizzato(username)) {
                 db.insertStudente(studente);
+                System.out.println("Inserito " + username + " in classe " + classeAssegnata);
             }
         }
     }
@@ -192,16 +205,16 @@ public class DatiProvaDB {
     private static void insertCodiciClasse() {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         try (Statement statement = connection.createStatement()) {
-            // Codici Studenti
+            // Codici Studenti (invariati: 001 per 1A ... 005 per 5A)
             for (int i = 1; i <= 5; i++) {
                 String classe = i + "A";
-                String code = String.format("%03d", i); // 001, 002...
+                String code = String.format("%03d", i);
                 insertCodiceSafe(statement, classe, "studente", code);
             }
-            // Codici Professori
+            // Codici Professori (invariati: 006 per 1A ... 010 per 5A)
             for (int i = 1; i <= 5; i++) {
                 String classe = i + "A";
-                String code = String.format("%03d", i + 5); // 006, 007...
+                String code = String.format("%03d", i + 5);
                 insertCodiceSafe(statement, classe, "professore", code);
             }
         } catch (SQLException e) {
