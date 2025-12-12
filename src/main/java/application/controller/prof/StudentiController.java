@@ -90,9 +90,6 @@ public class StudentiController implements DataObserver {
     // Utilizza il pattern Strategy per scegliere la strategia di esportazione
     @FXML
     private void exportPDF() {
-
-        // Prima -> PDFGenerator.getInstance().pdfAndamentoClasse(studentiList);
-
         // Implementazione del pattern Strategy
         // Creiamo il contesto di esportazione
         ExportContext exportContext = ExportContext.getInstance();

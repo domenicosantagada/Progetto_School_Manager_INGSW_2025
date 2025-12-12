@@ -19,7 +19,7 @@ public class CompitiController {
     private Label classeLabel;
 
     @FXML
-    private TextArea compitiAssegnati; // Area di testo per inserire la descrizione del compito
+    private TextArea compitiAssegnati;
 
     // Variabili per memorizzare la materia insegnata dal docente e la classe assegnata
     private String materia;

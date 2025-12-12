@@ -6,7 +6,9 @@ import application.model.CompitoAssegnato;
 import application.model.ElaboratoCaricato;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -18,13 +20,14 @@ import java.util.List;
 
 public class ConsegneController {
 
-
     private String prof;
+
     private String classe;
 
 
     @FXML
     private VBox consegneContainer;
+
     @FXML
     private Label classeLabel;
 
@@ -40,7 +43,6 @@ public class ConsegneController {
         classe = Database.getInstance().getClasseUser(prof);
 
         classeLabel.setText(classe.toUpperCase());
-
 
         visualizzaCompiti();
     }
@@ -103,8 +105,8 @@ public class ConsegneController {
         });
 
         // Context Menu per eliminare il compito
-        javafx.scene.control.ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
-        javafx.scene.control.MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Compito");
+        ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
+        MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Compito");
         deleteItem.setOnAction(e -> {
             // Controlla se ci sono elaborati per questo compito
             if (Database.getInstance().hasElaboratiForCompito(comp.id())) {
