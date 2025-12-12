@@ -7,8 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.URL?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0"
-            prefWidth="1050.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="760.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/21"
             fx:controller="application.controller.prof.HomeProfController">
 
     <stylesheets>
@@ -94,7 +94,7 @@
                     <top>
                         <HBox alignment="CENTER_LEFT" spacing="8.0">
                             <children>
-                                <HBox fx:id="boxNominativo" spacing="12.0">
+                                <HBox fx:id="boxNominativo" alignment="CENTER_LEFT" spacing="12.0">
                                     <children>
                                         <Label textFill="#eeeeee">
                                             <font>
@@ -114,7 +114,7 @@
                                         </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="boxMateria" spacing="12.0">
+                                <HBox fx:id="boxMateria" alignment="CENTER_LEFT" spacing="12.0">
                                     <children>
                                         <Label textFill="#eeeeee">
                                             <font>
@@ -129,8 +129,10 @@
                                                 <Font size="15.0"/>
                                             </font>
                                         </Label>
+                                        <ChoiceBox fx:id="classeChoiceBox" prefWidth="60.0"/>
                                     </children>
                                 </HBox>
+                                <HBox fx:id="boxClasse" spacing="12.0"/>
                             </children>
                             <BorderPane.margin>
                                 <Insets left="10.0" top="10.0"/>
