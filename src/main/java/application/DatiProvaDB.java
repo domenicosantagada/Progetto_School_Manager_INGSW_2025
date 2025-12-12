@@ -211,12 +211,9 @@ public class DatiProvaDB {
                 String code = String.format("%03d", i);
                 insertCodiceSafe(statement, classe, "studente", code);
             }
-            // Codici Professori (invariati: 006 per 1A ... 010 per 5A)
-            for (int i = 1; i <= 5; i++) {
-                String classe = i + "A";
-                String code = String.format("%03d", i + 5);
-                insertCodiceSafe(statement, classe, "professore", code);
-            }
+
+            insertCodiceSafe(statement, "1A", "professore", "006");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
