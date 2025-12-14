@@ -6,7 +6,9 @@ import application.model.CompitoAssegnato;
 import application.model.ElaboratoCaricato;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -18,13 +20,14 @@ import java.util.List;
 
 public class ConsegneController {
 
-
     private String prof;
+
     private String classe;
 
 
     @FXML
     private VBox consegneContainer;
+
     @FXML
     private Label classeLabel;
 
@@ -40,7 +43,6 @@ public class ConsegneController {
         classe = Database.getInstance().getClasseUser(prof);
 
         classeLabel.setText(classe.toUpperCase());
-
 
         visualizzaCompiti();
     }
@@ -103,8 +105,8 @@ public class ConsegneController {
         });
 
         // Context Menu per eliminare il compito
-        javafx.scene.control.ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
-        javafx.scene.control.MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Compito");
+        ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
+        MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Compito");
         deleteItem.setOnAction(e -> {
             // Controlla se ci sono elaborati per questo compito
             if (Database.getInstance().hasElaboratiForCompito(comp.id())) {
@@ -130,7 +132,9 @@ public class ConsegneController {
         consegneContainer.getChildren().add(container);
     }
 
+    // Metodo per mostrare gli elaborati caricati per un compito specifico
     private void mostraElaborati(CompitoAssegnato compito, VBox container) {
+        // Pulisce il contenuto precedente e carica gli elaborati dal database
         container.getChildren().clear();
         List<ElaboratoCaricato> elaborati = Database.getInstance().getElaboratiCompito(compito.id());
 
@@ -139,6 +143,7 @@ public class ConsegneController {
             return;
         }
 
+        // Crea una sezione per ogni elaborato
         for (ElaboratoCaricato elaborato : elaborati) {
             BorderPane elPane = new BorderPane();
             elPane.setStyle("-fx-background-color: #f0f0f0; -fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5;");
@@ -160,6 +165,7 @@ public class ConsegneController {
         }
     }
 
+    // Metodo per scaricare l'elaborato in formato PDF
     private void scaricaPDF(ElaboratoCaricato elaborato) {
         String nomeStudente = Database.getInstance().getFullName(elaborato.studente());
         FileChooser fileChooser = new FileChooser();
@@ -169,6 +175,7 @@ public class ConsegneController {
 
         File file = fileChooser.showSaveDialog(consegneContainer.getScene().getWindow());
         if (file != null) {
+            // Scrive i byte del file PDF selezionato
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(elaborato.file());
                 SceneHandler.getInstance().showInformation("File salvato correttamente in: " + file.getAbsolutePath());

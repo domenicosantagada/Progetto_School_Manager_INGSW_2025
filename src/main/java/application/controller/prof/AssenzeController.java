@@ -9,9 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.*;
 
@@ -33,7 +31,7 @@ public class AssenzeController {
     private BorderPane mainPane;
 
     @FXML
-    private BorderPane updatePane; // Pannello per aggiungere una nuova assenza
+    private BorderPane updatePane;
 
     @FXML
     private Label meseLabel;
@@ -77,9 +75,8 @@ public class AssenzeController {
         setProfClasse();
 
         // Otteniamo la lista degli studenti della classe per la materia specifica
-        // anche se la materia non viene utilizzata in questo contesto, viene comunque recuperata
-        // per utilizzare lo stesso metodo di accesso al database che viene usato per
-        // recuperare gli studenti in altri contesti.
+        // anche se la materia non viene utilizzata in questo contesto utilizziamo questo
+        // metodo perché lo abbiamo gia implementato nel Database
         studenti = Database.getInstance().getStudentiClasse(classe, materia);
 
         // Mappiamo gli studenti alle loro posizioni nella griglia del calendario (studente -> indice)
@@ -221,8 +218,8 @@ public class AssenzeController {
         cellaColorata.getChildren().add(testoLabel);
 
         // Context Menu per eliminare l'assenza
-        javafx.scene.control.ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
-        javafx.scene.control.MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Assenza");
+        ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
+        MenuItem deleteItem = new javafx.scene.control.MenuItem("Elimina Assenza");
         deleteItem.setOnAction(e -> {
             // Recupero lo studente corretto in base alla posizione
             StudenteTable studente = studenti.get(posizione);
