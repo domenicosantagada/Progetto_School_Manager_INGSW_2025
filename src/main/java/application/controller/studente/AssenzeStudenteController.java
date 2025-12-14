@@ -58,6 +58,7 @@ public class AssenzeStudenteController implements DataObserver {
         loadData();
     }
 
+    // Carica le assenze dello studente dalla base dati
     private void loadData() {
         String username = SceneHandler.getInstance().getUsername();
         // recupero le assenze dello studente
@@ -118,10 +119,11 @@ public class AssenzeStudenteController implements DataObserver {
         mainPane.setEffect(null);
     }
 
+    // Metodo chiamato quando i dati nel database cambiano
     @Override
     public void update(Object event) {
         if (event instanceof String && "ASSENZA_GIUSTIFICATA".equals(event)) {
-            // Aggiorna la tabella
+            // Aggiorna la tabella quando un'assenza viene giustificata (evento del pattern Observer)
             Platform.runLater(this::loadData);
         }
     }
