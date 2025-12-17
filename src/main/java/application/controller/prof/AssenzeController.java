@@ -165,7 +165,7 @@ public class AssenzeController {
     }
 
     @FXML
-    private void addAssenzaClicked() {
+    private void aggiungiAssenzaStudente() {
         try {
             // Controllo che i campi non siano vuoti, in caso contrario mostro un avviso all'utente
             if (studenteChoice.getSelectionModel().isEmpty() || dataAssenza.getValue() == null) {

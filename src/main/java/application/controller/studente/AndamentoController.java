@@ -2,6 +2,7 @@ package application.controller.studente;
 
 import application.Database;
 import application.SceneHandler;
+import application.export.CSVExportStrategy;
 import application.export.ExportContext;
 import application.export.PDFExportStrategy;
 import application.model.ValutazioneStudente;
@@ -35,6 +36,9 @@ public class AndamentoController implements DataObserver {
     // Lista dei voti dello studente
     private List<ValutazioneStudente> voti = new ArrayList<>();
 
+    // Contesto per l'esportazione (Pattern Strategy)
+    private final ExportContext exportContext = ExportContext.getInstance();
+
     @FXML
     private VBox listaVotiVBox;          // Contenitore delle card dei voti
     @FXML
@@ -62,15 +66,6 @@ public class AndamentoController implements DataObserver {
         SceneHandler.getInstance().setStudentHomePage(studente);
     }
 
-    @FXML
-    private void exportPDF(MouseEvent event) {
-        // Esporta i voti dello studente in PDF tramite Strategy Pattern
-        ExportContext exportContext = ExportContext.getInstance();
-        exportContext.setStrategy(new PDFExportStrategy());
-        // se volessi esportare in altri formati, aggiungi altre strategie qui
-        // esempio: exportContext.setStrategy(new CSVExportStrategy());
-        exportContext.exportValutazione(voti);
-    }
 
     @FXML
     public void initialize() {
@@ -221,5 +216,21 @@ public class AndamentoController implements DataObserver {
             updateListVoti(voti);
             updateRiepilogo(voti);
         }
+    }
+
+    @FXML
+    private void exportPDF(MouseEvent event) {
+        // Impostiamo la strategia concreta per l'esportazione in PDF
+        exportContext.setStrategy(new PDFExportStrategy());
+        // Eseguiamo l'esportazione
+        exportContext.exportValutazione(voti);
+    }
+
+    @FXML
+    public void exportCSV(MouseEvent mouseEvent) {
+        // Impostiamo la strategia concreta
+        exportContext.setStrategy(new CSVExportStrategy());
+        // Eseguiamo l'esportazione
+        exportContext.exportValutazione(voti);
     }
 }
