@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 public class CompitiController {
 
     @FXML
-    private Label classeLabel;
+    private Label classLabel;
 
     @FXML
     private TextArea compitiAssegnati;
@@ -73,7 +73,7 @@ public class CompitiController {
         classe = Database.getInstance().getClasseUser(SceneHandler.getInstance().getUsername());
 
         // Imposto il testo della label con il nome della classe recuperata
-        classeLabel.setText(classe);
+        classLabel.setText(classe);
 
         // Recupero la materia insegnata dal docente per utilizzarla nella creazione dei compiti
         materia = Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername());

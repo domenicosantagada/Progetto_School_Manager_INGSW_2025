@@ -26,7 +26,7 @@
                                                  size="20" styleClass="iconaFreccia">
                                 </FontAwesomeIcon>
 
-                                <Label fx:id="meseLabel"/>
+                                <Label fx:id="monthLabel"/>
 
                                 <FontAwesomeIcon fill="104d89" iconName="ARROW_RIGHT" onMouseClicked="#meseSuccessivo"
                                                  size="20" styleClass="iconaFreccia">
@@ -35,7 +35,7 @@
                             </children>
                         </HBox>
 
-                        <GridPane fx:id="calendarioGrid" styleClass="calendar-griglia" VBox.vgrow="SOMETIMES">
+                        <GridPane fx:id="calendarGrid" styleClass="calendar-griglia" VBox.vgrow="SOMETIMES">
                             <columnConstraints>
                                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0"
                                                    prefWidth="100.0"/>
@@ -77,7 +77,7 @@
                               BorderPane.alignment="CENTER">
                             <children>
                                 <Label styleClass="classe" text="Classe"/>
-                                <Label fx:id="classeLabel" styleClass="classe"/>
+                                <Label fx:id="classLabel" styleClass="classe"/>
                             </children>
                         </HBox>
                     </center>
@@ -97,7 +97,7 @@
                 </BorderPane>
             </top>
         </BorderPane>
-        <BorderPane fx:id="updatePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+        <BorderPane fx:id="inputPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                     minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="mainPane">
             <top>
                 <BorderPane prefHeight="118.0" prefWidth="600.0" styleClass="topPane" BorderPane.alignment="CENTER">
@@ -112,7 +112,7 @@
                         <HBox alignment="CENTER_RIGHT" prefHeight="34.0" prefWidth="600.0"
                               BorderPane.alignment="CENTER">
                             <children>
-                                <FontAwesomeIcon iconName="ARROW_LEFT" onMouseClicked="#backUpdateClicked" size="30"
+                                <FontAwesomeIcon iconName="ARROW_LEFT" onMouseClicked="#onCancelAddAbsence" size="30"
                                                  styleClass="iconaFreccia">
                                     <HBox.margin>
                                         <Insets right="5.0" top="5.0"/>
@@ -127,8 +127,8 @@
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0"
                       BorderPane.alignment="CENTER">
                     <children>
-                        <ChoiceBox fx:id="studenteChoice" prefHeight="34.0" prefWidth="213.0"/>
-                        <DatePicker fx:id="dataAssenza" prefHeight="34.0" prefWidth="213.0"/>
+                        <ChoiceBox fx:id="studentChoiceBox" prefHeight="34.0" prefWidth="213.0"/>
+                        <DatePicker fx:id="absenceDatePicker" prefHeight="34.0" prefWidth="213.0"/>
                         <Button fx:id="assenzaButton" mnemonicParsing="false" onAction="#aggiungiAssenzaStudente"
                                 styleClass="buttons" text="Inserisci">
                             <VBox.margin>

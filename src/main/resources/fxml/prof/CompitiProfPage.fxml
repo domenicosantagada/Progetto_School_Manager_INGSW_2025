@@ -32,7 +32,7 @@
                               BorderPane.alignment="CENTER">
                             <children>
                                 <Label styleClass="classe" text="Classe"/>
-                                <Label fx:id="classeLabel" styleClass="classe"/>
+                                <Label fx:id="classLabel" styleClass="classe"/>
                             </children>
                         </HBox>
                     </center>
