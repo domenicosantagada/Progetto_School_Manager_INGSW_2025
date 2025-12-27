@@ -2,9 +2,9 @@ package application.controller.studente;
 
 import application.Database;
 import application.SceneHandler;
-import application.export.CSVExportStrategy;
-import application.export.ExportContext;
-import application.export.PDFExportStrategy;
+import application.exportStrategy.CSVExportStrategy;
+import application.exportStrategy.ExportContext;
+import application.exportStrategy.PDFExportStrategy;
 import application.model.ValutazioneStudente;
 import application.observer.DataObserver;
 import javafx.collections.FXCollections;

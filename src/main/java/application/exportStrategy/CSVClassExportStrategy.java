@@ -1,4 +1,4 @@
-package application.export;
+package application.exportStrategy;
 
 import application.model.StudenteTable;
 

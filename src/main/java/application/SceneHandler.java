@@ -43,7 +43,7 @@ public class SceneHandler {
         this.stage = stage;
         scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("MyClassRoom");
+        stage.setTitle("School Manager");
         stage.setFullScreen(false);
         stage.setResizable(true);
         stage.setWidth(1050);
