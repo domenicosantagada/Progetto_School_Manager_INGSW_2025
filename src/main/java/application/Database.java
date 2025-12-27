@@ -223,6 +223,7 @@ public class Database implements ObservableSubject {
 
     // === IMPLEMENTAZIONE OBSERVER PATTERN (Soggetto Concreto) ===
 
+    // Registra un observer alla lista
     @Override
     public void attach(DataObserver observer) {
         if (!observers.contains(observer)) {
@@ -230,11 +231,13 @@ public class Database implements ObservableSubject {
         }
     }
 
+    // Rimuove un observer dalla lista
     @Override
     public void detach(DataObserver observer) {
         observers.remove(observer);
     }
 
+    // Notifica tutti gli observer registrati di un evento
     @Override
     public void notifyObservers(Object event) {
         // Iteriamo su una copia per evitare ConcurrentModificationException
