@@ -14,16 +14,7 @@ import java.util.List;
 public class Database implements DatabaseSubject {
 
     // Singleton
-    private static final Database instance = new Database();
-    // Lista di observer registrati che verranno notificati in caso di cambiamenti
-    private final List<DatabaseObserver> observers = new ArrayList<>();
-    // DAOs
-    private UserDAO userDAO;
-    private SchoolDAO schoolDAO;
-    private VotiDAO votiDAO;
-    private AssenzeDAO assenzeDAO;
-    private NoteDAO noteDAO;
-    private CompitiDAO compitiDAO;
+    private static Database instance;
 
     // Costruttore privato per Singleton
     private Database() {
@@ -32,13 +23,32 @@ public class Database implements DatabaseSubject {
     }
 
     public static Database getInstance() {
+
+        if (instance == null)
+            instance = new Database();
+
         return instance;
     }
+
+
+    // Lista di observer registrati che verranno notificati in caso di cambiamenti
+    private final List<DatabaseObserver> observers = new ArrayList<>();
+
+    // DAOs
+    private UserDAO userDAO;
+    private SchoolDAO schoolDAO;
+    private VotiDAO votiDAO;
+    private AssenzeDAO assenzeDAO;
+    private NoteDAO noteDAO;
+    private CompitiDAO compitiDAO;
+
 
     private void connect() {
         DatabaseConnection dbConnection = DatabaseConnection.getInstance();
         Connection connection = dbConnection.getConnection();
 
+
+        // Inizializza i DAO solo se la connessione è riuscita
         if (connection != null) {
             this.userDAO = new UserDAO();
             this.schoolDAO = new SchoolDAO();
