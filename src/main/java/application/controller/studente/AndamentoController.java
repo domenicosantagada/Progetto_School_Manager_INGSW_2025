@@ -30,7 +30,6 @@ import java.util.List;
 public class AndamentoController implements DatabaseObserver {
 
     private List<String> materie = new ArrayList<>();   // Materie dell'istituto
-    private String studente;                            // Username dello studente loggato
     private List<ValutazioneStudente> voti = new ArrayList<>(); // Voti dello studente
     private final ExportContext exportContext = ExportContext.getInstance(); // Contesto strategia esportazione
 
@@ -43,38 +42,55 @@ public class AndamentoController implements DatabaseObserver {
     @FXML
     private Label votiInAttesaLabel, insufficienzeLabel, sufficienzeLabel, mediaVoti, nominativoStudente, classeStudente;
 
-    // Torna alla home dello studente e rimuove l'observer
-    @FXML
-    private void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this);
-        SceneHandler.getInstance().setStudentHomePage(studente);
-    }
+
+    private SceneHandler sh;
+    private Database db;
+    private String usernameStudente, classe;
+
 
     // Inizializza il controller e la UI
     @FXML
     public void initialize() {
-        studente = SceneHandler.getInstance().getUsername();
-        Database.getInstance().attach(this);
 
-        materie = Database.getInstance().getAllMaterieIstituto();
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        usernameStudente = sh.getUsername();
+        classe = db.getClasseUser(usernameStudente);
+
+        db.attach(this);    // Si registra come observer del database
+
+        materie = db.getAllMaterieIstituto();
         materieX.setCategories(FXCollections.observableArrayList(materie));
 
-        voti = Database.getInstance().getVotiStudente(studente);
+        voti = db.getVotiStudente(usernameStudente);
 
-        nominativoStudente.setText(Database.getInstance().getFullName(studente).toUpperCase());
-        classeStudente.setText(Database.getInstance().getClasseUser(studente).toUpperCase());
+        nominativoStudente.setText(db.getFullName(usernameStudente).toUpperCase());
+        classeStudente.setText(classe.toUpperCase());
 
         updateChart(voti);
         updateListVoti(voti);
         updateRiepilogo(voti);
     }
 
+
+    // Torna alla home dello studente e rimuove l'observer
+    @FXML
+    private void backButtonClicked() throws IOException {
+        db.detach(this);    // Rimuove l'observer prima di cambiare scena
+        sh.setStudentHomePage(usernameStudente);
+    }
+
+
     // Aggiorna riepilogo voti: insufficienze, sufficienze, voti in attesa e media
     private void updateRiepilogo(List<ValutazioneStudente> voti) {
+
+        // Inizializza contatori
         int insufficienze = 0, sufficienze = 0, votiInAttesa = 0, sommaVoti = 0, votiTotali = 0;
 
         for (ValutazioneStudente voto : voti) {
-            if (voto.voto() == 0) votiInAttesa++;
+            if (voto.voto() == 0)
+                votiInAttesa++;
             else {
                 votiTotali++;
                 sommaVoti += voto.voto();
@@ -88,13 +104,14 @@ public class AndamentoController implements DatabaseObserver {
         sufficienzeLabel.setText(String.valueOf(sufficienze));
 
         double media = (votiTotali > 0) ? (double) sommaVoti / votiTotali : 0.0;
-        mediaVoti.setText(String.format("%.2f", media));
+        mediaVoti.setText(String.format("%.2f", media)); // Formatta a 2 decimali
     }
 
     // Aggiorna la lista dei voti visualizzati come card
     private void updateListVoti(List<ValutazioneStudente> voti) {
         listaVotiVBox.getChildren().clear();
-        for (ValutazioneStudente voto : voti) generaLabel(voto);
+        for (ValutazioneStudente voto : voti)
+            generaLabel(voto);
     }
 
     // Genera la card di un singolo voto
@@ -109,10 +126,15 @@ public class AndamentoController implements DatabaseObserver {
 
         card.setStyle("-fx-border-radius:10px; -fx-background-radius:10px; -fx-padding:10px;");
 
-        if (voto.voto() > 1 && voto.voto() < 6) card.setStyle(card.getStyle() + "-fx-background-color: #f55c47;");
-        else if (voto.voto() >= 6) card.setStyle(card.getStyle() + "-fx-background-color: #9fe6a0;");
-        else card.setStyle(card.getStyle() + "-fx-background-color: #e5e4e2;");
+        // Colora la card in base al voto
+        if (voto.voto() > 1 && voto.voto() < 6)
+            card.setStyle(card.getStyle() + "-fx-background-color: #f55c47;"); // Rosso per insufficienze
+        else if (voto.voto() >= 6)
+            card.setStyle(card.getStyle() + "-fx-background-color: #9fe6a0;"); // Verde per sufficienze
+        else
+            card.setStyle(card.getStyle() + "-fx-background-color: #e5e4e2;"); // Grigio per voti in attesa
 
+        // Imposta layout della card
         card.setTop(materiaVoto);
         card.setCenter(date);
         card.setAlignment(materiaVoto, Pos.CENTER);
@@ -125,6 +147,7 @@ public class AndamentoController implements DatabaseObserver {
     private void updateChart(List<ValutazioneStudente> voti) {
         andamentoChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
+
         for (ValutazioneStudente voto : voti) {
             if (voto.voto() != 0) {
                 XYChart.Data<String, Number> data = new XYChart.Data<>(voto.materia(), voto.voto());
@@ -144,14 +167,14 @@ public class AndamentoController implements DatabaseObserver {
     @Override
     public void update(DatabaseEvent event) {
         if ((event.type() == DatabaseEventType.VOTO_AGGIORNATO || event.type() == DatabaseEventType.NOTA_INSERITA)
-                && event.data() != null && event.data().equals(studente)) {
+                && event.data() != null && event.data().equals(usernameStudente)) {
 
             javafx.application.Platform.runLater(() -> {
-                voti = Database.getInstance().getVotiStudente(studente);
+                voti = Database.getInstance().getVotiStudente(usernameStudente);
                 updateChart(voti);
                 updateListVoti(voti);
                 updateRiepilogo(voti);
-                System.out.println("Andamento ricaricato per lo studente: " + studente);
+                System.out.println("Andamento ricaricato per lo studente: " + usernameStudente);
             });
         }
     }
