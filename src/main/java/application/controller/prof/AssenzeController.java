@@ -57,9 +57,11 @@ public class AssenzeController implements DatabaseObserver {
     /* =======================
        ====== VARIABILI ======
        ======================= */
-    private String prof;
-    private String classe;
-    private String materia;
+
+    private SceneHandler sh;
+    private Database db;
+
+    private String usernameProf, classe, materia;
 
     private List<StudenteTable> studenti;
     private final Map<StudenteTable, Integer> studentToRowMap = new HashMap<>();
@@ -69,7 +71,11 @@ public class AssenzeController implements DatabaseObserver {
     // Inizializza il controller
     @FXML
     public void initialize() {
-        Database.getInstance().attach(this);    // Aggiunge l'observer al database
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        db.attach(this);    // Aggiunge l'observer al database
 
         setupStyleSheet();  // Imposta lo stile CSS
         setupInitialState(); // Imposta lo stato iniziale della UI
@@ -100,7 +106,7 @@ public class AssenzeController implements DatabaseObserver {
     }
 
     private void loadStudents() {
-        studenti = Database.getInstance().getStudentiClasse(classe, materia);
+        studenti = db.getStudentiClasse(classe, materia);
         studenti.sort((s1, s2) -> s1.cognome().compareToIgnoreCase(s2.cognome()));
         mapStudentsToGridRows();
     }
@@ -155,7 +161,7 @@ public class AssenzeController implements DatabaseObserver {
     // Carica le assenze dal database e le mostra nel calendario
     private void loadAndRenderAbsences() {
         for (StudenteTable s : studenti) {
-            List<Assenza> assenzeStudente = Database.getInstance().getAssenzeStudente(s.username(), mese.getMonthValue());
+            List<Assenza> assenzeStudente = db.getAssenzeStudente(s.username(), mese.getMonthValue());
 
             // ordiniamo le assenze dello studente per anno, mese e giorno
             // assenzeStudente.sort(Comparator.comparingInt(Assenza::anno).thenComparingInt(Assenza::mese).thenComparingInt(Assenza::giorno));
@@ -233,8 +239,8 @@ public class AssenzeController implements DatabaseObserver {
         MenuItem deleteItem = new MenuItem("Elimina Assenza");
         deleteItem.setOnAction(e -> {
             StudenteTable studente = studenti.get(posizione);
-            Database.getInstance().deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
-            SceneHandler.getInstance().showInformation("Assenza eliminata correttamente.");
+            db.deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
+            sh.showInformation("Assenza eliminata correttamente.");
             calendarGrid.getChildren().remove(cellaColorata);
         });
         contextMenu.getItems().add(deleteItem);
@@ -250,9 +256,9 @@ public class AssenzeController implements DatabaseObserver {
 
     // Imposta professore, classe e materia
     private void setProfClasse() {
-        prof = SceneHandler.getInstance().getUsername();
-        classe = Database.getInstance().getClasseUser(prof);
-        materia = Database.getInstance().getMateriaProf(prof);
+        usernameProf = sh.getUsername();
+        classe = db.getClasseUser(usernameProf);
+        materia = db.getMateriaProf(usernameProf);
         classLabel.setText(classe);
     }
 
@@ -261,12 +267,10 @@ public class AssenzeController implements DatabaseObserver {
     private void aggiungiAssenzaStudente() {
         try {
             if (studentChoiceBox.getSelectionModel().isEmpty() || absenceDatePicker.getValue() == null) {
-                SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+                sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
             }
 
-            //Integer posizione = studentToRowMap.get(studenti.get(studentChoiceBox.getSelectionModel().getSelectedIndex()));
             Integer posizione = studentChoiceBox.getSelectionModel().getSelectedIndex();
-            //Integer giornoAssenza = absenceDatePicker.getValue().getDayOfMonth();
             LocalDate giornoAssenza = absenceDatePicker.getValue();
             StudenteTable studente = studenti.get(posizione);
 
@@ -278,7 +282,7 @@ public class AssenzeController implements DatabaseObserver {
                     "Assenza non giustificata",
                     false);
 
-            Database.getInstance().addAssenza(assenza);
+            db.addAssenza(assenza);
             drawAbsenceIndicator(posizione, giornoAssenza.getDayOfMonth(), false);
             onCancelAddAbsence();
 
@@ -291,8 +295,8 @@ public class AssenzeController implements DatabaseObserver {
     // Torna alla pagina precedente
     @FXML
     private void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi'
-        SceneHandler.getInstance().setProfessorHomePage(prof);
+        db.detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi'
+        sh.setProfessorHomePage(usernameProf);
     }
 
     // Nasconde il pannello di aggiunta assenza

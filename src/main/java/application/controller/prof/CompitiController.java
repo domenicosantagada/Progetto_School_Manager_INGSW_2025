@@ -25,20 +25,25 @@ public class CompitiController implements DatabaseObserver {
     @FXML
     private TextArea compitiAssegnati;
 
-    private String materia;
-    private String classe;
-    private String profUsername;
+    private String materia, classe, profUsername;
+
+    private Database db;
+    private SceneHandler sh;
 
 
     // Inizializza il controller
     @FXML
     public void initialize() {
-        Database.getInstance().attach(this); // Si registra come observer del database
 
-        profUsername = SceneHandler.getInstance().getUsername();
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
 
-        classe = Database.getInstance().getClasseUser(profUsername);
-        materia = Database.getInstance().getMateriaProf(profUsername);
+        db.attach(this); // Si registra come observer del database
+
+        profUsername = sh.getUsername();
+
+        classe = db.getClasseUser(profUsername);
+        materia = db.getMateriaProf(profUsername);
 
         // Setup interfaccia
         classLabel.setText(classe);
@@ -48,15 +53,15 @@ public class CompitiController implements DatabaseObserver {
     // Torna alla homepage del professore
     @FXML
     public void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi''
-        SceneHandler.getInstance().setProfessorHomePage(profUsername);
+        db.detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi''
+        sh.setProfessorHomePage(profUsername);
     }
 
     // Invia un nuovo compito assegnato
     @FXML
     public void inviaCompiti(ActionEvent actionEvent) throws IOException {
         if (compitiAssegnati.getText().trim().isEmpty()) {
-            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+            sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
             compitiAssegnati.setText("");
             return;
         }
@@ -69,12 +74,12 @@ public class CompitiController implements DatabaseObserver {
                 compitiAssegnati.getText().toUpperCase().trim(),
                 classe);
 
-        if (Database.getInstance().insertCompito(compito)) {
-            SceneHandler.getInstance().showInformation(MessageDebug.COMPITO_INSERTED);
+        if (db.insertCompito(compito)) {
+            sh.showInformation(MessageDebug.COMPITO_INSERTED);
             compitiAssegnati.setText("");
             backButtonClicked();
         } else {
-            SceneHandler.getInstance().showWarning(MessageDebug.COMPITO_NOT_INSERTED);
+            sh.showWarning(MessageDebug.COMPITO_NOT_INSERTED);
         }
     }
 
