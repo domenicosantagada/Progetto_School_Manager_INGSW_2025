@@ -73,19 +73,11 @@ public class AssenzeController implements DatabaseObserver {
 
         setupStyleSheet();  // Imposta lo stile CSS
         setupInitialState(); // Imposta lo stato iniziale della UI
+        setProfClasse(); // Imposta le info di classe e professore
+        loadStudents(); //  Carica gli studenti dalla classe
+        setupStudentChoiceBox(); // Imposta la ChoiceBox degli studenti
 
-        setProfClasse();
-
-        studenti = Database.getInstance().getStudentiClasse(classe, materia);
-
-        mapStudentsToGridRows();
-        populateCalendar();
-
-        for (StudenteTable s : studenti) {
-            studentChoiceBox.getItems().add(s.cognome().toUpperCase() + " " + s.nome().toUpperCase());
-        }
-
-        loadAndRenderAbsences();
+        refreshCalendar(); // Carica il calendario
     }
 
     private void setupStyleSheet() {
@@ -98,14 +90,35 @@ public class AssenzeController implements DatabaseObserver {
 
     private void setupInitialState() {
         inputPane.setVisible(false);
-        setMeseCorrente();
+        mese = LocalDate.now();
+        updateMonthLabel();
+    }
+
+    private void loadStudents() {
+        studenti = Database.getInstance().getStudentiClasse(classe, materia);
+        studenti.sort((s1, s2) -> s1.cognome().compareToIgnoreCase(s2.cognome()));
+        mapStudentsToGridRows();
     }
 
     // Mappa ogni studente alla riga della griglia
     private void mapStudentsToGridRows() {
+        studentToRowMap.clear(); // Inizializza il mappa;
         for (StudenteTable s : studenti) {
             studentToRowMap.put(s, studenti.indexOf(s));
         }
+    }
+
+    private void setupStudentChoiceBox() {
+        studentChoiceBox.getItems().clear(); // Inizializza la ChoiceBox
+        for (StudenteTable s : studenti) {
+            studentChoiceBox.getItems().add(s.cognome().toUpperCase() + " " + s.nome().toUpperCase());
+        }
+    }
+
+
+    private void refreshCalendar() {
+        populateCalendar();
+        loadAndRenderAbsences();
     }
 
     // Carica le assenze dal database e le mostra nel calendario
@@ -119,9 +132,7 @@ public class AssenzeController implements DatabaseObserver {
     }
 
     // Imposta il mese corrente nella label
-    private void setMeseCorrente() {
-        mese = LocalDate.now();
-        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
+    private void updateMonthLabel() {
         monthLabel.setText(mese.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
     }
 
@@ -131,38 +142,6 @@ public class AssenzeController implements DatabaseObserver {
         classe = Database.getInstance().getClasseUser(prof);
         materia = Database.getInstance().getMateriaProf(prof);
         classLabel.setText(classe);
-    }
-
-    // Converte il mese da inglese a italiano
-    private String meseItaliano(String s) {
-        switch (s) {
-            case "JANUARY":
-                return "Gennaio";
-            case "FEBRUARY":
-                return "Febbraio";
-            case "MARCH":
-                return "Marzo";
-            case "APRIL":
-                return "Aprile";
-            case "MAY":
-                return "Maggio";
-            case "JUNE":
-                return "Giugno";
-            case "JULY":
-                return "Luglio";
-            case "AUGUST":
-                return "Agosto";
-            case "SEPTEMBER":
-                return "Settembre";
-            case "OCTOBER":
-                return "Ottobre";
-            case "NOVEMBER":
-                return "Novembre";
-            case "DECEMBER":
-                return "Dicembre";
-            default:
-                return "Mese non valido";
-        }
     }
 
     // Aggiunge una nuova assenza selezionata
@@ -243,7 +222,7 @@ public class AssenzeController implements DatabaseObserver {
         }
 
         Integer dayOfMonth = mese.lengthOfMonth();
-        studenti.sort((s1, s2) -> s1.cognome().compareToIgnoreCase(s2.cognome()));
+        //studenti.sort((s1, s2) -> s1.cognome().compareToIgnoreCase(s2.cognome()));
 
         calendarGrid.getChildren().clear();
         calendarGrid.getColumnConstraints().clear();
@@ -298,7 +277,8 @@ public class AssenzeController implements DatabaseObserver {
     // Mostra il mese precedente nel calendario
     public void mesePrecedente() {
         mese = mese.minusMonths(1);
-        monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
+        updateMonthLabel();
+        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
         populateCalendar();
         loadAndRenderAbsences();
     }
@@ -306,7 +286,8 @@ public class AssenzeController implements DatabaseObserver {
     // Mostra il mese successivo nel calendario
     public void meseSuccessivo() {
         mese = mese.plusMonths(1);
-        monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
+        updateMonthLabel();
+        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
         populateCalendar();
         loadAndRenderAbsences();
     }
