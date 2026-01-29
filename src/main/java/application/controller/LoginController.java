@@ -26,10 +26,37 @@ public class LoginController {
     @FXML
     private FontAwesomeIcon toggleIconPassword; // Icona per mostra/nascondi password
 
+
+    private SceneHandler sh;
+    private Database db;
+
+
+    // Inizializza la pagina di login
+    public void initialize() {
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        caricaLogo();
+
+        // Sincronizza i campi password visibile/nascosto
+        addListeners();
+
+        // Imposta il focus sul campo username
+        userField.requestFocus();
+    }
+
+    private void caricaLogo() {
+        // Carica e imposta il logo
+        String imagePath = getClass().getResource("/icon/logo.png").toExternalForm();
+        logoView.setImage(new Image(imagePath));
+    }
+
+
     // Metodo per navigare alla pagina di registrazione
     @FXML
     private void registrationClicked() throws IOException {
-        SceneHandler.getInstance().setRegistrationPage();
+        sh.setRegistrationPage();
     }
 
     // Metodo per effettuare il login
@@ -40,36 +67,24 @@ public class LoginController {
 
         // Controllo che i campi non siano vuoti
         if (username.isEmpty() || password.isEmpty()) {
-            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+            sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
         }
         // Controllo che le credenziali siano valide
-        else if (Database.getInstance().validateCredentials(username, password)) {
+        else if (db.validateCredentials(username, password)) {
 
             // Naviga alla home page in base al tipo di utente
-            String typeUser = Database.getInstance().getTypeUser(username);
+            String typeUser = db.getTypeUser(username);
             if (typeUser.equals("studente")) {
-                SceneHandler.getInstance().setStudentHomePage(username);
+                sh.setStudentHomePage(username);
             } else if (typeUser.equals("professore")) {
-                SceneHandler.getInstance().setProfessorHomePage(username);
+                sh.setProfessorHomePage(username);
             }
         } else {
             // Messaggio se credenziali non valide
-            SceneHandler.getInstance().showWarning(MessageDebug.CREEDENTIALS_NOT_VALID);
+            sh.showWarning(MessageDebug.CREEDENTIALS_NOT_VALID);
         }
     }
 
-    // Inizializza la pagina di login
-    public void initialize() {
-        // Carica e imposta il logo
-        String imagePath = getClass().getResource("/icon/logo.png").toExternalForm();
-        logoView.setImage(new Image(imagePath));
-
-        // Sincronizza i campi password visibile/nascosto
-        addListeners();
-
-        // Imposta il focus sul campo username
-        userField.requestFocus();
-    }
 
     // Aggiunge i listener per sincronizzare i campi password e gestire il tasto ENTER
     private void addListeners() {
