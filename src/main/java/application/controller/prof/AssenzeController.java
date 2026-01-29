@@ -64,9 +64,9 @@ public class AssenzeController implements DatabaseObserver {
     private String usernameProf, classe, materia;
 
     private List<StudenteTable> studenti;
-    private final Map<StudenteTable, Integer> studentToRowMap = new HashMap<>();
+    private final Map<StudenteTable, Integer> studentToRowMap = new HashMap<>(); // Mappa studente -> riga nella griglia
 
-    private LocalDate mese;
+    private LocalDate dataCorrente;
 
     // Inizializza il controller
     @FXML
@@ -101,7 +101,7 @@ public class AssenzeController implements DatabaseObserver {
 
     private void setupInitialState() {
         inputPane.setVisible(false);
-        mese = LocalDate.now();
+        dataCorrente = LocalDate.now(); // LoclDate now restituisce la data corrente
         updateMonthLabel();
     }
 
@@ -161,10 +161,7 @@ public class AssenzeController implements DatabaseObserver {
     // Carica le assenze dal database e le mostra nel calendario
     private void loadAndRenderAbsences() {
         for (StudenteTable s : studenti) {
-            List<Assenza> assenzeStudente = db.getAssenzeStudente(s.username(), mese.getMonthValue());
-
-            // ordiniamo le assenze dello studente per anno, mese e giorno
-            // assenzeStudente.sort(Comparator.comparingInt(Assenza::anno).thenComparingInt(Assenza::mese).thenComparingInt(Assenza::giorno));
+            List<Assenza> assenzeStudente = db.getAssenzeStudente(s.username(), dataCorrente.getMonthValue());
 
             for (Assenza a : assenzeStudente) {
                 drawAbsenceIndicator(studentToRowMap.get(s), a.giorno(), a.giustificata());
@@ -173,7 +170,7 @@ public class AssenzeController implements DatabaseObserver {
     }
 
     private void setupCplumns() {
-        Integer dayOfMonth = mese.lengthOfMonth();
+        Integer dayOfMonth = dataCorrente.lengthOfMonth();
 
         ColumnConstraints studentColumn = new ColumnConstraints();
         studentColumn.setHgrow(Priority.NEVER);
@@ -208,7 +205,7 @@ public class AssenzeController implements DatabaseObserver {
     }
 
     private void addDayLabels() {
-        Integer dayOfMonth = mese.lengthOfMonth();
+        Integer dayOfMonth = dataCorrente.lengthOfMonth();
 
         for (int i = 0; i < dayOfMonth; i++) {
             Label giornoLabel = new Label(String.valueOf(i + 1));
@@ -239,7 +236,7 @@ public class AssenzeController implements DatabaseObserver {
         MenuItem deleteItem = new MenuItem("Elimina Assenza");
         deleteItem.setOnAction(e -> {
             StudenteTable studente = studenti.get(posizione);
-            db.deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
+            db.deleteAssenza(studente.username(), giorno, dataCorrente.getMonthValue(), dataCorrente.getYear());
             sh.showInformation("Assenza eliminata correttamente.");
             calendarGrid.getChildren().remove(cellaColorata);
         });
@@ -251,7 +248,7 @@ public class AssenzeController implements DatabaseObserver {
 
     // Imposta il mese corrente nella label
     private void updateMonthLabel() {
-        monthLabel.setText(mese.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
+        monthLabel.setText(dataCorrente.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
     }
 
     // Imposta professore, classe e materia
@@ -320,7 +317,7 @@ public class AssenzeController implements DatabaseObserver {
 
     // Mostra il mese precedente nel calendario
     public void mesePrecedente() {
-        mese = mese.minusMonths(1);
+        dataCorrente = dataCorrente.minusMonths(1);
         updateMonthLabel();
         populateCalendar();
         loadAndRenderAbsences();
@@ -328,7 +325,7 @@ public class AssenzeController implements DatabaseObserver {
 
     // Mostra il mese successivo nel calendario
     public void meseSuccessivo() {
-        mese = mese.plusMonths(1);
+        dataCorrente = dataCorrente.plusMonths(1);
         updateMonthLabel();
         populateCalendar();
         loadAndRenderAbsences();
