@@ -35,10 +35,30 @@ public class AssenzeStudenteController implements DatabaseObserver {
 
     private final ObservableList<Assenza> assenzeList = FXCollections.observableArrayList();
 
+
+    private SceneHandler sh;
+    private Database db;
+    private String usernameStudente;
+
+
     // Inizializza il controller: registra observer, configura colonne e carica dati
     public void initialize() {
-        Database.getInstance().attach(this);
 
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+        usernameStudente = sh.getUsername();
+
+
+        db.attach(this); // Registra questo controller come observer del database
+
+        // Configura le colonne della tabella
+        configureTableColumns();
+
+        // Carica i dati delle assenze
+        loadData();
+    }
+
+    private void configureTableColumns() {
         dataColumn.setCellValueFactory(cellData -> {
             Assenza a = cellData.getValue();
             return new SimpleStringProperty(a.giorno() + "/" + a.mese() + "/" + a.anno());
@@ -47,14 +67,11 @@ public class AssenzeStudenteController implements DatabaseObserver {
         giustificataColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().giustificata() ? "Sì" : "No")
         );
-
-        loadData();
     }
 
     // Carica le assenze dello studente e ordina dalla meno recente alla più recente
     private void loadData() {
-        String username = SceneHandler.getInstance().getUsername();
-        List<Assenza> assenze = Database.getInstance().getAssenzeStudente(username);
+        List<Assenza> assenze = db.getAssenzeStudente(usernameStudente);
 
         assenze.sort(Comparator.comparing(Assenza::anno)
                 .thenComparing(Assenza::mese)
@@ -67,8 +84,8 @@ public class AssenzeStudenteController implements DatabaseObserver {
     // Torna alla home dello studente e rimuove l'observer
     @FXML
     public void backClicked() throws IOException {
-        Database.getInstance().detach(this);
-        SceneHandler.getInstance().setStudentHomePage(SceneHandler.getInstance().getUsername());
+        db.detach(this); // Rimuovi questo controller come observer del database
+        sh.setStudentHomePage(usernameStudente);
     }
 
     // Mostra il pannello per giustificare un'assenza selezionata
@@ -76,11 +93,11 @@ public class AssenzeStudenteController implements DatabaseObserver {
     public void giustificaClicked() {
         Assenza selected = assenzeTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            SceneHandler.getInstance().showWarning("Seleziona un'assenza da giustificare.");
+            sh.showWarning("Seleziona un'assenza da giustificare.");
             return;
         }
         if (selected.giustificata()) {
-            SceneHandler.getInstance().showInformation("Questa assenza è già stata giustificata.");
+            sh.showInformation("Questa assenza è già stata giustificata.");
             return;
         }
 
@@ -97,11 +114,11 @@ public class AssenzeStudenteController implements DatabaseObserver {
         String motivazione = motivazioneArea.getText().trim();
 
         if (motivazione.isEmpty()) {
-            SceneHandler.getInstance().showWarning("Inserisci una motivazione.");
+            sh.showWarning("Inserisci una motivazione.");
             return;
         }
 
-        Database.getInstance().justifyAssenza(selected, motivazione);
+        db.justifyAssenza(selected, motivazione);
 
         annullaGiustificaClicked();
     }
