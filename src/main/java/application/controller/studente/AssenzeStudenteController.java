@@ -1,6 +1,6 @@
 package application.controller.studente;
 
-import application.model.Assenza;
+import  application.model.Assenza;
 import application.observer.DatabaseObserver;
 import application.persistence.Database;
 import application.persistence.DatabaseEvent;

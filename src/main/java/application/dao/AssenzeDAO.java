@@ -122,7 +122,15 @@ public class AssenzeDAO {
             statement.setInt(3, assenza.giorno());
             statement.setInt(4, assenza.mese());
             statement.setInt(5, assenza.anno());
-            statement.executeUpdate();
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("✓ Assenza di " + assenza.username() +
+                        " del " + assenza.giorno() + "/" + assenza.mese() +
+                        "/" + assenza.anno() + " giustificata con motivazione: " + motivazione);
+            } else {
+                System.out.println("⚠ Nessuna assenza aggiornata: verifica i dati inseriti");
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

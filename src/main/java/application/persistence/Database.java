@@ -73,6 +73,10 @@ public class Database implements DatabaseSubject {
         return userDAO.insertProfessore(professore);
     }
 
+    public void removeStudente(String username) {
+        userDAO.removeStudente(username);
+    }
+
     public boolean usernameUtilizzato(String username) {
         return userDAO.usernameUtilizzato(username);
     }

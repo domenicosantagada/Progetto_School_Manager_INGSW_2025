@@ -12,135 +12,60 @@ import application.persistence.DatabaseEvent;
 import application.persistence.DatabaseEventType;
 import application.utility.MessageDebug;
 import application.view.SceneHandler;
+import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StudentiController implements DatabaseObserver {
+    /* =========================
+               FXML COMPONENTS
+               ========================= */
+    @FXML private Label nominativoStudenteVotoPane, classeLabel, totalStudentsLabel, insufficientLabel, sufficientLabel, nominativoStudenteLabel;
+    @FXML private BorderPane mainPane, addNotaPane, addVotoPane;
+    @FXML private TableView<StudenteTable> studentiTableView;
+    @FXML private TableColumn<StudenteTable, String> nameColumn, surnameColumn, dataValutazioneColumn;
+    //@FXML private TableColumn<StudenteTable, Void> eliminaColumn;
+    @FXML private TableColumn<StudenteTable, Integer> voteColumn;
+    @FXML private TextField notaField, votoField;
+    @FXML private Button showVotoPane;
+    @FXML private ComboBox<StudenteTable> studentiBox;
+    @FXML public VBox studenteScelto;
 
+    /* =========================
+       VARIABLES
+       ========================= */
     private ObservableList<StudenteTable> studenti = FXCollections.observableArrayList();
     private List<StudenteTable> studentiList;
     private final ExportContext exportContext = ExportContext.getInstance();
     private StudenteTable studenteSelezionato;
 
-    @FXML
-    private Label nominativoStudenteVotoPane, classeLabel, totalStudentsLabel, insufficientLabel, sufficientLabel, nominativoStudenteLabel;
+    private static final String DEFAULT_ROW_STYLE = "-fx-background-color: transparent;";
+    private static final String SUFFICIENT_ROW_STYLE = "-fx-background-color: #9fe6a0;";
+    private static final String INSUFFICIENT_ROW_STYLE = "-fx-background-color: #f55c47;";
+    private static final String FAIL_ROW_STYLE = "-fx-background-color: #e53935;";
 
-    @FXML
-    private BorderPane mainPane, addNotaPane, addVotoPane;
-
-    @FXML
-    private TableView<StudenteTable> studentiTableView;
-
-    @FXML
-    private TableColumn<StudenteTable, String> nameColumn, surnameColumn, dataValutazioneColumn;
-
-    @FXML
-    private TableColumn<StudenteTable, Integer> voteColumn;
-
-    @FXML
-    private TextField notaField, votoField;
-
-    // Mostra il pannello per aggiungere una nota
-    @FXML
-    private void showNotePaneClicked() {
-        studenteSelezionato = studentiTableView.getSelectionModel().getSelectedItem();
-        if (studenteSelezionato == null) {
-            SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
-        } else {
-            addNotaPane.setVisible(true);
-            nominativoStudenteLabel.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
-            mainPane.setDisable(true);
-            mainPane.setEffect(new GaussianBlur());
-        }
-    }
-
-    // Aggiunge una nota allo studente selezionato
-    @FXML
-    private void addNotaClicked() {
-        String nota = notaField.getText();
-        if (nota.trim().isEmpty()) {
-            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
-            notaField.clear();
-        } else {
-            Nota notaDB = new Nota(studenteSelezionato.username(), SceneHandler.getInstance().getUsername(),
-                    nota.toUpperCase(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            if (Database.getInstance().insertNota(notaDB)) {
-                SceneHandler.getInstance().showInformation(MessageDebug.NOTE_ADDED);
-                notaField.clear();
-                backNoteClicked();
-            } else {
-                SceneHandler.getInstance().showWarning(MessageDebug.ERROR_NOTE_ADD);
-            }
-        }
-    }
-
-    // Aggiorna il voto dello studente selezionato
-    @FXML
-    private void updateVoto() {
-        try {
-            Integer newVoto = Integer.parseInt(votoField.getText());
-            if (newVoto < 0 || newVoto > 10) {
-                SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
-            } else {
-                ValutazioneStudente valutazione = new ValutazioneStudente(
-                        studenteSelezionato.username(),
-                        SceneHandler.getInstance().getUsername(),
-                        Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername()),
-                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        newVoto);
-                if (Database.getInstance().updateVoto(valutazione)) {
-                    SceneHandler.getInstance().showInformation(MessageDebug.VOTO_UPDATED);
-                    votoField.clear();
-                    backVoteClickedVotoPane();
-                } else {
-                    SceneHandler.getInstance().showWarning(MessageDebug.ERROR_VOTO_UPDATE);
-                }
-            }
-        } catch (NumberFormatException e) {
-            SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
-        }
-    }
-
-    // Chiude il pannello di aggiunta nota
-    @FXML
-    private void backNoteClicked() {
-        addNotaPane.setVisible(false);
-        mainPane.setDisable(false);
-        mainPane.setEffect(null);
-    }
-
-    // Chiude il pannello di aggiunta voto
-    @FXML
-    public void backVoteClickedVotoPane() {
-        addVotoPane.setVisible(false);
-        mainPane.setDisable(false);
-        mainPane.setEffect(null);
-    }
-
-    // Torna alla home del professore e rimuove l'observer
-    @FXML
-    private void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this);
-        SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
-    }
-
-    // Inizializza il controller e carica studenti e statistiche
+    /* =========================
+       INITIALIZE
+       ========================= */
     public void initialize() {
         Database.getInstance().attach(this);
 
@@ -148,87 +73,311 @@ public class StudentiController implements DatabaseObserver {
         studentiList = Database.getInstance().getStudentiClasse(classeLabel.getText(),
                 Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername()));
 
-        aggiornaNumeroStudenti();
-        aggiornaAndamentoClasse();
-        setValueFactory();
-        studentiTableView.setItems(studenti);
+        setupTable();
+        setupRowStyle();
+        aggiornaStatistiche();
+        bindButtonsToSelection();
+        setStudents(studentiList);
+
+        showVotoPane.setOnAction(actionEvent -> {
+            if(studenteSelezionato != null) {
+                String input = showAlert("Nuovo voto", "Inserisci il nuovo voto:", true);
+                if(input != null) {
+                    int voto = Integer.parseInt(input);
+                    updateVoto(voto);
+                }
+            }
+        });
+
+        setupCombobox();
     }
 
-    // Aggiorna il numero di insufficienti e sufficienti
-    private void aggiornaAndamentoClasse() {
-        int insufficienti = 0;
-        int sufficienti = 0;
-        for (StudenteTable studente : studentiList) {
-            if (studente.voto() < 6) insufficienti++;
+    /* =========================
+       TABLE SETUP
+       ========================= */
+    private void setupTable() {
+        /* eliminaColumn.setCellFactory(col -> new TableCell<>() {
+
+            private final Button btn = new Button("Elimina");
+
+            {
+                btn.setOnAction(e -> {
+                    var item = getTableView().getItems().get(getIndex());
+                    getTableView().getItems().remove(item);
+                    Database.getInstance().removeStudente(item.username());
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });*/
+        nameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().nome().toUpperCase()));
+        surnameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().cognome().toUpperCase()));
+        dataValutazioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().dataValutazione()));
+        voteColumn.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().voto()).asObject());
+    }
+
+    /* =========================
+       ROW STYLE MANAGEMENT
+       ========================= */
+    private void setupRowStyle() {
+        studentiTableView.setRowFactory(tv -> {
+            TableRow<StudenteTable> row = new TableRow<>() {
+                @Override
+                protected void updateItem(StudenteTable studente, boolean empty) {
+                    super.updateItem(studente, empty);
+                    //applyRowStyle(this, studente, empty, DEFAULT_ROW_STYLE);
+                }
+            };
+
+            AtomicInteger counter = new AtomicInteger(0);
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    StudenteTable selezionato = row.getItem();
+                    studenteSelezionato = selezionato; // aggiorniamo lo studente selezionato
+
+                    counter.getAndIncrement();
+                    if(studenteSelezionato != null && counter.get() == 2) {
+                        String input = showAlert("Nuovo voto", "Inserisci il nuovo voto:", true);
+                        if (input != null) {
+                            try {
+                                int voto = Integer.parseInt(input);
+                                updateVoto(voto);
+                                counter.set(0);
+                            } catch (NumberFormatException e) {
+                                SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
+                            }
+                        }
+                    }
+                }
+            });
+
+            return row;
+        });
+    }
+
+    private void setupCombobox(){
+        studentiBox.setItems(
+                FXCollections.observableArrayList(studenti)
+        );
+        studentiBox.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    System.out.println(studentiBox.getSelectionModel().getSelectedItem().nome());
+                    studenteScelto.getChildren().clear();
+                    studenteScelto.getChildren().addAll(new Label(newValue.nome()), new Label(newValue.cognome()), new Label(newValue.dataValutazione()), new Label(String.valueOf(newValue.voto())));
+                });
+
+        studentiBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(StudenteTable s) {
+                if (s == null) return "";
+                return s.cognome() + " " + s.nome();
+            }
+
+            @Override
+            public StudenteTable fromString(String string) {
+                return null;
+            }
+        });
+    }
+
+
+    private void applyRowStyle(TableRow<StudenteTable> row, StudenteTable studente, boolean empty, String style) {
+        if (empty || studente == null) {
+            row.setStyle(style);
+            return;
+        }
+
+        //if (studente.voto() < 5) row.setStyle(FAIL_ROW_STYLE);
+        //else if (studente.voto() < 6) row.setStyle(INSUFFICIENT_ROW_STYLE);
+        //else row.setStyle(SUFFICIENT_ROW_STYLE);
+    }
+
+    public void resetRowStyles() {
+        studentiTableView.getItems().forEach(s -> {
+            TableRow<StudenteTable> row = (TableRow<StudenteTable>) studentiTableView.lookup(".table-row-cell");
+            if (row != null) row.setStyle(DEFAULT_ROW_STYLE);
+        });
+    }
+
+    /* =========================
+       STATISTICS
+       ========================= */
+    private void aggiornaStatistiche() {
+        int insufficienti = 0, sufficienti = 0;
+        for (StudenteTable s : studentiList) {
+            if (s.voto() < 6) insufficienti++;
             else sufficienti++;
         }
         insufficientLabel.setText(String.valueOf(insufficienti));
         sufficientLabel.setText(String.valueOf(sufficienti));
-    }
-
-    // Aggiorna il numero totale di studenti
-    private void aggiornaNumeroStudenti() {
         totalStudentsLabel.setText(String.valueOf(studentiList.size()));
     }
 
-    // Configura le colonne della tabella
-    private void setValueFactory() {
-        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nome().toUpperCase()));
-        surnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().cognome().toUpperCase()));
-        dataValutazioneColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().dataValutazione()));
-        voteColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().voto()).asObject());
-        setStudents(studentiList);
+    /* =========================
+       SELECTION BINDING
+       ========================= */
+    private void bindButtonsToSelection() {
+        BooleanBinding nothingSelected = studentiTableView.getSelectionModel().selectedItemProperty().isNull();
+        // esempio di binding: disabilita pulsanti se niente selezionato
+        // puoi collegare qui altri bottoni se servono
     }
 
-    // Aggiorna la lista degli studenti nella tabella
+    /* =========================
+       STUDENT MANAGEMENT
+       ========================= */
     private void setStudents(List<StudenteTable> studentiList) {
         studenti.clear();
         studenti.addAll(studentiList);
+        studentiTableView.setItems(studenti);
         studentiTableView.refresh();
     }
 
-    // Mostra il pannello di aggiunta voto
-    public void showVotoPageClicked(ActionEvent actionEvent) {
+    public String showAlert(String title, String message, boolean withPrompt) {
+        if (withPrompt) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle(title);
+            dialog.setHeaderText(null);
+            dialog.setContentText(message);
+
+            return dialog.showAndWait().orElse(null);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+            return null;
+        }
+    }
+
+    @FXML
+    private void showNotePaneClicked() {
         studenteSelezionato = studentiTableView.getSelectionModel().getSelectedItem();
         if (studenteSelezionato == null) {
             SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
+            return;
+        }
+        addNotaPane.setVisible(true);
+        mainPane.setDisable(true);
+        mainPane.setEffect(new GaussianBlur());
+        nominativoStudenteLabel.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
+    }
+
+    @FXML
+    private void addNotaClicked() {
+        String nota = notaField.getText();
+        if (nota.trim().isEmpty()) {
+            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+            notaField.clear();
+            return;
+        }
+
+        Nota notaDB = new Nota(studenteSelezionato.username(), SceneHandler.getInstance().getUsername(),
+                nota.toUpperCase(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        if (Database.getInstance().insertNota(notaDB)) {
+            SceneHandler.getInstance().showInformation(MessageDebug.NOTE_ADDED);
+            notaField.clear();
+            backNoteClicked();
         } else {
-            addVotoPane.setVisible(true);
-            nominativoStudenteVotoPane.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
-            mainPane.setDisable(true);
-            mainPane.setEffect(new GaussianBlur());
+            SceneHandler.getInstance().showWarning(MessageDebug.ERROR_NOTE_ADD);
         }
     }
 
-    // Aggiorna la UI in base agli eventi del database
-    @Override
-    public void update(DatabaseEvent event) {
-        if (event.type() == DatabaseEventType.VOTO_AGGIORNATO || event.type() == DatabaseEventType.NOTA_INSERITA) {
-            System.out.println("StudentiController: ricevuto evento " + event.type());
-            javafx.application.Platform.runLater(() -> {
-                studentiList = Database.getInstance().getStudentiClasse(
-                        classeLabel.getText(),
-                        Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername())
-                );
-                aggiornaNumeroStudenti();
-                aggiornaAndamentoClasse();
-                setStudents(studentiList);
-                System.out.println("Lista studenti e statistiche aggiornate correttamente.");
-            });
+    @FXML
+    private void showVotoPageClicked(ActionEvent actionEvent) {
+        studenteSelezionato = studentiTableView.getSelectionModel().getSelectedItem();
+        if (studenteSelezionato == null) {
+            SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
+            return;
+        }
+        addVotoPane.setVisible(true);
+        mainPane.setDisable(true);
+        mainPane.setEffect(new GaussianBlur());
+        nominativoStudenteVotoPane.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
+    }
+
+    public void updateVoto(int newVoto) {
+        if (studenteSelezionato == null) {
+            SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
+            return;
+        }
+
+        if (newVoto < 0 || newVoto > 10) {
+            SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
+            return;
+        }
+
+        ValutazioneStudente valutazione = new ValutazioneStudente(
+                studenteSelezionato.username(),
+                SceneHandler.getInstance().getUsername(),
+                Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername()),
+                LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                newVoto
+        );
+
+        if (Database.getInstance().updateVoto(valutazione)) {
+            SceneHandler.getInstance().showInformation(MessageDebug.VOTO_UPDATED);
+            backVoteClickedVotoPane();
+        } else {
+            SceneHandler.getInstance().showWarning(MessageDebug.ERROR_VOTO_UPDATE);
         }
     }
 
-    // Esporta l'andamento della classe in PDF
+    /* =========================
+       BACK ACTIONS
+       ========================= */
+    @FXML private void backNoteClicked() {
+        addNotaPane.setVisible(false);
+        mainPane.setDisable(false);
+        mainPane.setEffect(null);
+    }
+
+    @FXML private void backVoteClickedVotoPane() {
+        addVotoPane.setVisible(false);
+        mainPane.setDisable(false);
+        mainPane.setEffect(null);
+    }
+
+    @FXML private void backButtonClicked() throws IOException {
+        Database.getInstance().detach(this);
+        SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
+    }
+
+    /* =========================
+       EXPORT
+       ========================= */
     @FXML
     private void exportPDF() {
         exportContext.setStrategy(new PDFClasseStrategy());
         exportContext.exportAndamentoClasse(studentiList);
     }
 
-    // Esporta l'andamento della classe in CSV
     @FXML
-    public void exportCSV(MouseEvent mouseEvent) {
+    private void exportCSV(MouseEvent mouseEvent) {
         exportContext.setStrategy(new CSVClasseStrategy());
         exportContext.exportAndamentoClasse(studentiList);
+    }
+
+    /* =========================
+       DATABASE OBSERVER
+       ========================= */
+    @Override
+    public void update(DatabaseEvent event) {
+        if (event.type() == DatabaseEventType.VOTO_AGGIORNATO || event.type() == DatabaseEventType.NOTA_INSERITA) {
+            Platform.runLater(() -> {
+                studentiList = Database.getInstance().getStudentiClasse(
+                        classeLabel.getText(),
+                        Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername())
+                );
+                aggiornaStatistiche();
+                setStudents(studentiList);
+            });
+        }
     }
 }

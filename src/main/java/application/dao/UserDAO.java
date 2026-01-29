@@ -93,6 +93,16 @@ public class UserDAO {
         }
     }
 
+    public void removeStudente(String username) {
+        String query = "DELETE FROM user WHERE username = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)){
+            statement.setString(1, username);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Controlla se lo username esiste già
     public boolean usernameUtilizzato(String username) {
         String query = "SELECT username FROM user WHERE username = ?";
