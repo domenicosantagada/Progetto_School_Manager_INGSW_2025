@@ -130,7 +130,7 @@
                         </TableView>
                         <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="800.0" spacing="80.0">
 
-                            <Button fx:id="showNotePane" mnemonicParsing="false" styleClass="buttons" text="INSERISCI NOTA" textAlignment="CENTER" wrapText="true" />
+                            <Button fx:id="showNotePane" onAction="#showNotePaneClicked" mnemonicParsing="false" styleClass="buttons" text="INSERISCI NOTA" textAlignment="CENTER" wrapText="true" />
                             <Button fx:id="showVotoPane" maxHeight="-Infinity" mnemonicParsing="false" styleClass="buttons" text="INSERISCI VOTO" textAlignment="CENTER" wrapText="true" />
                         </HBox>
                     </children>
@@ -184,7 +184,7 @@
                             </VBox.margin>
                         </Label>
                         <TextField fx:id="notaField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="424.0" promptText="Nota disciplinare..." />
-                        <Button fx:id="addNota" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="buttons" text="Conferma" />
+                        <Button fx:id="addNota" onAction="#addNotaClicked" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="buttons" text="Conferma" />
                     </children>
                 </VBox>
             </center>

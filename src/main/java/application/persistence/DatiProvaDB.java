@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 // Classe utility per popolare il DB con molti dati di prova realistici
 public class DatiProvaDB {
-
+    /*
     private static final String DB_FILE_NAME = "gestionale.db";
 
     // Materie corrispondenti ai prof1...prof10
@@ -70,44 +70,44 @@ public class DatiProvaDB {
 
         // --- MATEMATICA (prof1) ---
         // Biennio
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-10", "Esercizi pag. 45 n. 1, 2, 3 (Equazioni)", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-24", "Studio del segno della parabola", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-12", "Esercizi sulle disequazioni fratte", "2A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-28", "Problemi di geometria analitica", "2A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-10", "Esercizi pag. 45 n. 1, 2, 3 (Equazioni)", "1A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-24", "Studio del segno della parabola", "1A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-12", "Esercizi sulle disequazioni fratte", "2A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-28", "Problemi di geometria analitica", "2A", resultSet.getBoolean("approvato")));
         // Triennio (Nuovi inserimenti)
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-15", "Goniometria: Formule di addizione", "3A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-05", "Verifica su esponenziali e logaritmi", "4A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-01", "Studio di funzione: limiti e derivate", "5A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-15", "Simulazione seconda prova esame di stato", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-10-15", "Goniometria: Formule di addizione", "3A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-11-05", "Verifica su esponenziali e logaritmi", "4A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-01", "Studio di funzione: limiti e derivate", "5A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof1", "Matematica", "2025-12-15", "Simulazione seconda prova esame di stato", "5A", resultSet.getBoolean("approvato")));
 
 
         // --- ITALIANO (prof2) ---
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-15", "Parafrasi canto I dell'Inferno", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-18", "Analisi del testo: 'La coscienza di Zeno'", "2A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-15", "Parafrasi canto I dell'Inferno", "1A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-18", "Analisi del testo: 'La coscienza di Zeno'", "2A", resultSet.getBoolean("approvato")));
         // Triennio
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-20", "Il Decameron: riassunto novelle scelte", "3A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-25", "Illuminismo e Parini: 'Il Giorno'", "4A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-12-10", "Leopardi: Analisi de 'L'Infinito' e pessimismo cosmico", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-10-20", "Il Decameron: riassunto novelle scelte", "3A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-11-25", "Illuminismo e Parini: 'Il Giorno'", "4A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof2", "Italiano", "2025-12-10", "Leopardi: Analisi de 'L'Infinito' e pessimismo cosmico", "5A", resultSet.getBoolean("approvato")));
 
 
         // --- INGLESE (prof3) ---
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-10-18", "Grammar: Present Perfect vs Past Simple", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-10", "Literature: Shakespeare's Macbeth summary", "2A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-10-18", "Grammar: Present Perfect vs Past Simple", "1A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-10", "Literature: Shakespeare's Macbeth summary", "2A", resultSet.getBoolean("approvato")));
         // Triennio
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-11-05", "The Victorian Age: Dickens and social reforms", "4A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-02", "Modernism: James Joyce and Stream of Consciousness", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-11-05", "The Victorian Age: Dickens and social reforms", "4A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof3", "Inglese", "2025-12-02", "Modernism: James Joyce and Stream of Consciousness", "5A", resultSet.getBoolean("approvato")));
 
 
         // --- STORIA (prof4) ---
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-10-20", "Studiare la Rivoluzione Francese (pag. 120-140)", "1A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-12", "I moti rivoluzionari del 1848", "2A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-10-20", "Studiare la Rivoluzione Francese (pag. 120-140)", "1A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-12", "I moti rivoluzionari del 1848", "2A", resultSet.getBoolean("approvato")));
         // Triennio
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-11-15", "La Prima Guerra Mondiale: cause e conseguenze", "5A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-18", "Il Fascismo e le leggi razziali", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-11-15", "La Prima Guerra Mondiale: cause e conseguenze", "5A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof4", "Storia", "2025-12-18", "Il Fascismo e le leggi razziali", "5A", resultSet.getBoolean("approvato")));
 
         // --- SCIENZE (prof5) ---
-        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-10-22", "La tettonica delle placche", "3A"));
-        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-11-10", "Chimica Organica: Alcani e Alcheni", "5A"));
+        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-10-22", "La tettonica delle placche", "3A", resultSet.getBoolean("approvato")));
+        db.insertCompito(new CompitoAssegnato(0, "prof5", "Scienze", "2025-11-10", "Chimica Organica: Alcani e Alcheni", "5A", resultSet.getBoolean("approvato")));
     }
 
     private static void insertAssenzeMassive(Database db) {
@@ -238,4 +238,5 @@ public class DatiProvaDB {
             e.printStackTrace();
         }
     }
+     */
 }

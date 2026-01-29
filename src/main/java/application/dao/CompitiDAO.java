@@ -4,10 +4,7 @@ import application.model.CompitoAssegnato;
 import application.model.ElaboratoCaricato;
 import application.persistence.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +32,7 @@ public class CompitiDAO {
                     FOREIGN KEY (materia) REFERENCES materie(nome)
                 );
                 """;
+
         String CREATE_ELABORATI_TABLE = """
                 CREATE TABLE IF NOT EXISTS elaboratiCaricati (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,11 +45,27 @@ public class CompitiDAO {
                     FOREIGN KEY (studente) REFERENCES user(username)
                 );
                 """;
-        try (java.sql.Statement statement = getConnection().createStatement()) {
+
+        /*String CREATE_NEW_ELABORATI_TABLE = """
+                CREATE TABLE IF NOT EXISTS newElaboratiCaricati (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    compitoId INTEGER NOT NULL,
+                    studente TEXT NOT NULL,
+                    data TEXT NOT NULL,
+                    commento TEXT,
+                    file BLOB,
+                    approvato BOOLEAN DEFAULT 0,
+                    FOREIGN KEY (compitoId) REFERENCES compiti(id),
+                    FOREIGN KEY (studente) REFERENCES user(username)
+                );
+                """;
+         */
+        try (Statement statement = getConnection().createStatement()) {
             statement.executeUpdate(CREATE_COMPITI_TABLE);
             statement.executeUpdate(CREATE_ELABORATI_TABLE);
+            //statement.executeUpdate(CREATE_NEW_ELABORATI_TABLE);
         } catch (SQLException e) {
-            System.out.println("Creazione tabelle Compiti fallita: " + e.getMessage());
+            throw new RuntimeException("Creazione tabelle Compiti fallita: " + e.getMessage(), e);
         }
     }
 
@@ -64,8 +78,7 @@ public class CompitiDAO {
             statement.setString(3, compito.data());
             statement.setString(4, compito.descrizione());
             statement.setString(5, compito.classe());
-            statement.executeUpdate();
-            return true;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -81,15 +94,15 @@ public class CompitiDAO {
                 """;
         try (PreparedStatement statement = getConnection().prepareStatement(query)) {
             statement.setString(1, classe);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
                 compiti.add(new CompitoAssegnato(
-                        resultSet.getInt("id"),
-                        resultSet.getString("professore"),
-                        resultSet.getString("materia"),
-                        resultSet.getString("data"),
-                        resultSet.getString("descrizione"),
-                        resultSet.getString("classe")
+                        rs.getInt("id"),
+                        rs.getString("professore"),
+                        rs.getString("materia"),
+                        rs.getString("data"),
+                        rs.getString("descrizione"),
+                        rs.getString("classe")
                 ));
             }
         } catch (SQLException e) {
@@ -107,8 +120,7 @@ public class CompitiDAO {
             statement.setString(3, elaborato.data());
             statement.setString(4, elaborato.commento());
             statement.setBytes(5, elaborato.file());
-            statement.executeUpdate();
-            return true;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -126,24 +138,24 @@ public class CompitiDAO {
                 """;
         try (PreparedStatement statement = getConnection().prepareStatement(query)) {
             statement.setInt(1, compitoId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
                 CompitoAssegnato compito = new CompitoAssegnato(
-                        resultSet.getInt("compitoId"),
-                        resultSet.getString("professore"),
-                        resultSet.getString("materia"),
-                        resultSet.getString("dataCompito"),
-                        resultSet.getString("descrizione"),
-                        resultSet.getString("classe")
+                        rs.getInt("compitoId"),
+                        rs.getString("professore"),
+                        rs.getString("materia"),
+                        rs.getString("dataCompito"),
+                        rs.getString("descrizione"),
+                        rs.getString("classe")
                 );
-
                 elaborati.add(new ElaboratoCaricato(
                         compito,
-                        resultSet.getString("studente"),
-                        resultSet.getString("data"),
-                        resultSet.getString("commento"),
-                        resultSet.getBytes("file"),
-                        resultSet.getInt("id")
+                        rs.getString("studente"),
+                        rs.getString("data"),
+                        rs.getString("commento"),
+                        rs.getBytes("file"),
+                        rs.getInt("id") //,
+                        //false
                 ));
             }
         } catch (SQLException e) {
@@ -152,19 +164,91 @@ public class CompitiDAO {
         return elaborati;
     }
 
+    /*
+    public boolean insertNewElaborato(ElaboratoCaricato elaborato) {
+        String query = "INSERT INTO newElaboratiCaricati (compitoId, studente, data, commento, file, approvato) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setInt(1, elaborato.compito().id());
+            statement.setString(2, elaborato.studente());
+            statement.setString(3, elaborato.data());
+            statement.setString(4, elaborato.commento());
+            statement.setBytes(5, elaborato.file());
+            statement.setBoolean(6, false);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ElaboratoCaricato> getNewElaboratiCompito(int compitoId) {
+        List<ElaboratoCaricato> elaborati = new ArrayList<>();
+        String query = """
+                SELECT ec.id, ec.studente, ec.data, ec.commento, ec.file, ec.approvato,
+                       c.id as compitoId, c.professore, c.materia, c.data as dataCompito, c.descrizione, c.classe
+                FROM newElaboratiCaricati ec
+                JOIN compiti c ON ec.compitoId = c.id
+                WHERE ec.compitoId = ?
+                """;
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setInt(1, compitoId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                CompitoAssegnato compito = new CompitoAssegnato(
+                        rs.getInt("compitoId"),
+                        rs.getString("professore"),
+                        rs.getString("materia"),
+                        rs.getString("dataCompito"),
+                        rs.getString("descrizione"),
+                        rs.getString("classe")
+                );
+                elaborati.add(new ElaboratoCaricato(
+                        compito,
+                        rs.getString("studente"),
+                        rs.getString("data"),
+                        rs.getString("commento"),
+                        rs.getBytes("file"),
+                        rs.getInt("id"),
+                        rs.getBoolean("approvato")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elaborati;
+    }
+    public boolean hasnewElaboratiForCompito(int compitoId) {
+        String query = "SELECT COUNT(*) FROM newElaboratiCaricati WHERE compitoId = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setInt(1, compitoId);
+            ResultSet rs = statement.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante il controllo degli elaborati: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deletenewElaborato(int elaboratoId) {
+        String query = "DELETE FROM newElaboratiCaricati WHERE id = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setInt(1, elaboratoId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione dell'elaborato: " + e.getMessage(), e);
+        }
+    }
+
+
+    */
     // Controlla se un compito ha almeno un elaborato
     public boolean hasElaboratiForCompito(int compitoId) {
         String query = "SELECT COUNT(*) FROM elaboratiCaricati WHERE compitoId = ?";
         try (PreparedStatement statement = getConnection().prepareStatement(query)) {
             statement.setInt(1, compitoId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1) > 0;
-            }
+            ResultSet rs = statement.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante il controllo degli elaborati: " + e.getMessage(), e);
         }
-        return false;
     }
 
     // Elimina un compito dalla tabella
@@ -186,6 +270,38 @@ public class CompitiDAO {
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante l'eliminazione dell'elaborato: " + e.getMessage(), e);
+        }
+    }
+
+
+    // Aggiunge colonna se non esiste
+    public void aggiungiColonnaSeNonEsiste(String nomeTabella, String nomeColonna, String tipoColonna, boolean notNull, String defaultValue) {
+        try (PreparedStatement stmt = getConnection().prepareStatement("PRAGMA table_info(" + nomeTabella + ")")) {
+            ResultSet rs = stmt.executeQuery();
+            boolean exists = false;
+            while (rs.next()) {
+                if (rs.getString("name").equalsIgnoreCase(nomeColonna)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                StringBuilder query = new StringBuilder();
+                query.append("ALTER TABLE ").append(nomeTabella)
+                        .append(" ADD COLUMN ").append(nomeColonna)
+                        .append(" ").append(tipoColonna);
+
+                if (notNull) query.append(" NOT NULL");
+                if (defaultValue != null) query.append(" DEFAULT ").append(defaultValue);
+
+                try (PreparedStatement alter = getConnection().prepareStatement(query.toString())) {
+                    alter.executeUpdate();
+                    System.out.println("Colonna " + nomeColonna + " aggiunta a " + nomeTabella);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore aggiungendo colonna: " + e.getMessage(), e);
         }
     }
 }

@@ -120,12 +120,11 @@ public class AssenzeController implements DatabaseObserver {
         }
     }
 
-    /* =======================
-       ===== CALENDARIO ======
-       ======================= */
+    /* CALENDARIO */
 
     private void refreshCalendar() {
         populateCalendarGrid();
+        calendarGrid.setGridLinesVisible(true);
         loadAndDrawAbsences();
     }
 
@@ -138,6 +137,7 @@ public class AssenzeController implements DatabaseObserver {
         setupRows();
         addStudentLabels();
         addDayLabels();
+        calendarGrid.setGridLinesVisible(true);
     }
 
     private void setupColumns() {
@@ -326,12 +326,14 @@ public class AssenzeController implements DatabaseObserver {
         meseCorrente = meseCorrente.minusMonths(1);
         updateMonthLabel();
         refreshCalendar();
+        calendarGrid.setGridLinesVisible(true);
     }
 
     public void meseSuccessivo() {
         meseCorrente = meseCorrente.plusMonths(1);
         updateMonthLabel();
         refreshCalendar();
+        calendarGrid.setGridLinesVisible(true);
     }
 
     private void updateMonthLabel() {
@@ -349,9 +351,26 @@ public class AssenzeController implements DatabaseObserver {
     public void update(DatabaseEvent event) {
         switch (event.type()) {
             case ASSENZA_AGGIUNTA:
+                Platform.runLater(() -> {
+                    try {
+                        Database.getInstance().detach(this);
+                        SceneHandler.getInstance()
+                                .setAssenzePage();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             case ASSENZA_GIUSTIFICATA:
             case ASSENZA_ELIMINATA:
-                Platform.runLater(this::refreshCalendar);
+                Platform.runLater(() -> {
+                    try {
+                        Database.getInstance().detach(this);
+                        SceneHandler.getInstance()
+                                .setAssenzePage();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
                 break;
             default:
                 break;

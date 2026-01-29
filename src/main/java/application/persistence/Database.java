@@ -191,17 +191,20 @@ public class Database implements DatabaseSubject {
 
     public boolean insertElaborato(ElaboratoCaricato elaborato) {
 
+        //return compitiDAO.insertNewElaborato(elaborato);
         return compitiDAO.insertElaborato(elaborato);
     }
 
     public List<ElaboratoCaricato> getElaboratiCompito(int compitoId) {
 
+        //return compitiDAO.getNewElaboratiCompito(compitoId);
         return compitiDAO.getElaboratiCompito(compitoId);
     }
 
 
     public boolean hasElaboratiForCompito(int compitoId) {
 
+        //return compitiDAO.hasElaboratiForCompito(compitoId);
         return compitiDAO.hasElaboratiForCompito(compitoId);
     }
 

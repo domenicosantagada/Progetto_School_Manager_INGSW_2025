@@ -1,5 +1,6 @@
 package application.controller.studente;
 
+import application.dao.CompitiDAO;
 import application.model.CompitoAssegnato;
 import application.model.ElaboratoCaricato;
 import application.persistence.Database;
@@ -115,13 +116,13 @@ public class CompitiController {
     // Carica gli elaborati già inviati dallo studente per il compito selezionato
     private void caricaElaboratiEsistenti(CompitoAssegnato comp) {
         elaboratiContainer.getChildren().clear();
-        List<ElaboratoCaricato> elaborati = Database.getInstance().getElaboratiCompito(comp.id());
+        CompitiDAO compitiDAO = new CompitiDAO();
+        List<ElaboratoCaricato> elaborati = compitiDAO.getElaboratiCompito(comp.id());
 
         elaborati.stream()
                 .filter(e -> e.studente().equals(studente))
                 .forEach(elaborato -> {
                     BorderPane elPane = new BorderPane();
-                    elPane.setStyle("-fx-background-color: #f9f9f9; -fx-padding: 5; -fx-border-color: #ddd; -fx-border-radius: 3;");
 
                     Label info = new Label(elaborato.data() + " - " +
                             (elaborato.commento() != null && !elaborato.commento().isEmpty() ? elaborato.commento() : "Nessun commento"));
@@ -212,8 +213,7 @@ public class CompitiController {
             String commento = commentoArea.getText();
             String data = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            ElaboratoCaricato elaborato = new ElaboratoCaricato(selectedCompito, studente, data, commento, fileContent);
-
+            ElaboratoCaricato elaborato = new ElaboratoCaricato(selectedCompito, studente, data, commento, fileContent /*, false */);
             if (Database.getInstance().insertElaborato(elaborato)) {
                 SceneHandler.getInstance().showInformation("Elaborato inviato con successo!");
                 backFromCaricaElaboratoClicked(null);

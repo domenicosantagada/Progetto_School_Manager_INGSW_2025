@@ -43,7 +43,7 @@ public class HomeProfController {
     // Mostra la pagina delle assenze
     @FXML
     public void assenzeClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setVotesPage();
+        SceneHandler.getInstance().setAssenzePage();
     }
 
     // Apre la sezione delle consegne degli studenti

@@ -1,11 +1,13 @@
 package application.controller.prof;
 
+import application.dao.CompitiDAO;
 import application.model.CompitoAssegnato;
 import application.model.ElaboratoCaricato;
 import application.persistence.Database;
 import application.view.SceneHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -22,6 +24,7 @@ public class ConsegneController {
 
     private String prof;
     private String classe;
+    CompitiDAO compitiDAO = new CompitiDAO();
 
     @FXML
     private VBox consegneContainer;
@@ -120,7 +123,8 @@ public class ConsegneController {
     // Mostra gli elaborati caricati per un compito
     private void mostraElaborati(CompitoAssegnato compito, VBox container) {
         container.getChildren().clear();
-        List<ElaboratoCaricato> elaborati = Database.getInstance().getElaboratiCompito(compito.id());
+        //List<ElaboratoCaricato> elaborati = compitiDAO.getNewElaboratiCompito(compito.id());
+        List<ElaboratoCaricato> elaborati = compitiDAO.getElaboratiCompito(compito.id());
 
         if (elaborati.isEmpty()) {
             container.getChildren().add(new Label("Nessun elaborato consegnato."));
@@ -134,8 +138,19 @@ public class ConsegneController {
             Label studenteLbl = new Label("Studente: " + Database.getInstance().getFullName(elaborato.studente()));
             Label dataLbl = new Label("Data: " + elaborato.data());
             Label commentoLbl = new Label("Commento: " + (elaborato.commento() != null ? elaborato.commento() : ""));
+            /*
+            Label approvatoLbl = new Label("Approvato: " +  (elaborato.approvato() ? "SI" : "NO"));
+            Button approvaBtn = new Button("Approva");
+            approvaBtn.setOnAction(e -> {
+                compitiDAO.updateElaborato(elaborato.id());
+                approvatoLbl.setText("Approvato: SI");
+                approvaBtn.setVisible(false);
+                approvaBtn.setManaged(true);
+            });
+             */
 
-            VBox infoBox = new VBox(studenteLbl, dataLbl, commentoLbl);
+            VBox infoBox = new VBox(studenteLbl, dataLbl, commentoLbl /*, approvatoLbl*/);
+            //if(!elaborato.approvato()) infoBox.getChildren().add(approvaBtn);
             elPane.setLeft(infoBox);
 
             Label downloadLbl = new Label("Scarica PDF");

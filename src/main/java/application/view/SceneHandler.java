@@ -90,7 +90,7 @@ public class SceneHandler {
         loadPage(loader);
     }
 
-    public void setVotesPage() throws IOException {
+    public void setAssenzePage() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/prof/AssenzeProfPage.fxml"));
         loadPage(loader);
     }
