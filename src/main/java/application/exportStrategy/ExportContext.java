@@ -32,7 +32,8 @@ public class ExportContext {
 
     // Imposta la strategia di esportazione
     public void setStrategy(ExportStrategy<?> strategy) {
-        this.strategy = strategy;
+        System.out.println("Strategia di esportazione impostata su: " + strategy.getClass().getSimpleName());
+        this.strategy = strategy; // qui stiamo assegnando la strategia passata come parametro ovvero PDFStudenteStrategy, CSVStudenteStrategy, PDFClasseStrategy o CSVClasseStrategy
     }
 
     // Mostra la finestra di dialogo per scegliere il file di esportazione
@@ -45,20 +46,32 @@ public class ExportContext {
     }
 
     // Esegue l'esportazione dei voti di uno studente
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") // Per evitare warning di cast non sicuri
     public void exportValutazione(List<ValutazioneStudente> voti) {
+
+        // Verifica che la strategia sia di tipo ExportVotiStudente e facciamo il cast direttamente
         if (strategy instanceof ExportVotiStudente studentStrategy) {
             try {
                 String username = sceneHandler.getUsername();
                 String nominativo = database.getFullName(username);
                 String classe = database.getClasseUser(username);
 
+                // Determina se la strategia è per CSV o PDF
                 boolean isCSV = strategy.getClass().getSimpleName().contains("CSV");
+
+                // Imposta l'estensione del file e il nome di default
                 String fileExtension = isCSV ? "*.csv" : "*.pdf";
+
+                // Descrizione dell'estensione del file
                 String extensionDescription = isCSV ? "CSV (Comma Separated Values)" : "PDF Document";
+
+                // Nome di default del file
                 String defaultFileName = nominativo + " - " + classe + "." + (isCSV ? "csv" : "pdf");
 
+                // Ottiene il file di esportazione tramite la finestra di dialogo
                 File file = getExportFile(defaultFileName, extensionDescription, fileExtension);
+
+                // Esegue l'esportazione utilizzando la strategia selezionata
                 studentStrategy.export(voti, file);
 
             } catch (Exception e) {

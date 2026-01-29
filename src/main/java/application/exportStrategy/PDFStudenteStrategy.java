@@ -25,7 +25,8 @@ public class PDFStudenteStrategy implements ExportVotiStudente {
     // Esporta le valutazioni dello studente in PDF
     @Override
     public void export(List<ValutazioneStudente> voti, File file) throws Exception {
-        if (file == null) return;
+        if (file == null)
+            return;
         creaPDFValutazione(voti, file.getAbsolutePath());
     }
 

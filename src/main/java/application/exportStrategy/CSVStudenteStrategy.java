@@ -16,7 +16,8 @@ public class CSVStudenteStrategy implements ExportVotiStudente {
      */
     @Override
     public void export(List<ValutazioneStudente> voti, File file) throws Exception {
-        if (file == null) return;
+        if (file == null)
+            return;
 
         try (FileWriter writer = new FileWriter(file)) {
 

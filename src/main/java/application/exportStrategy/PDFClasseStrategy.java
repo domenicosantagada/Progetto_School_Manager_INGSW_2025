@@ -25,7 +25,8 @@ public class PDFClasseStrategy implements ExportVotiClasse {
     // Esporta l'andamento della classe in PDF
     @Override
     public void export(List<StudenteTable> studenti, File file) throws Exception {
-        if (file == null) return;
+        if (file == null)
+            return;
         creaPDFAndamento(studenti, file.getAbsolutePath());
     }
 

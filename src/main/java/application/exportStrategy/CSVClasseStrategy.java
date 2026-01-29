@@ -16,7 +16,8 @@ public class CSVClasseStrategy implements ExportVotiClasse {
      */
     @Override
     public void export(List<StudenteTable> studenti, File file) throws Exception {
-        if (file == null) return;
+        if (file == null)
+            return;
 
         try (FileWriter writer = new FileWriter(file)) {
 
