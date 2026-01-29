@@ -10,12 +10,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// AssenzeDAO gestisce le operazioni CRUD per le assenze degli studenti
+// ovvero creare, leggere, aggiornare ed eliminare assenze
+// Dao sta per Data Access Object
 public class AssenzeDAO {
 
     public AssenzeDAO() {
         createTables(); // Crea la tabella assenze se non esiste
     }
 
+    // Ottiene la connessione al database
     private Connection getConnection() {
         return DatabaseConnection.getInstance().getConnection();
     }
@@ -57,7 +62,7 @@ public class AssenzeDAO {
         }
     }
 
-    // Restituisce tutte le assenze di uno studente ordinate per data decrescente
+    // Restituisce tutte le assenze di uno studente (dato il suo username) ordinate per data decrescente
     public List<Assenza> getAssenzeStudente(String studente) {
         List<Assenza> assenze = new ArrayList<>();
         String query = """

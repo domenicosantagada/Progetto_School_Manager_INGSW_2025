@@ -21,7 +21,7 @@ public class CompitiDAO {
         return DatabaseConnection.getInstance().getConnection();
     }
 
-    // Crea le tabelle per compiti e elaborati
+    // Crea le tabelle per compiti ed elaborati
     private void createTables() {
         String CREATE_COMPITI_TABLE = """
                 CREATE TABLE IF NOT EXISTS compiti (

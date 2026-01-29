@@ -22,6 +22,7 @@ public class UserDAO {
 
     // Crea le tabelle utenti e associazioni professore-materia
     private void createTables() {
+
         String CREATE_USER_TABLE = """ 
                 CREATE TABLE IF NOT EXISTS user (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +35,7 @@ public class UserDAO {
                     tipo TEXT NOT NULL
                 );
                 """;
+
         String CREATE_PROF_MATERIA_TABLE = """ 
                 CREATE TABLE IF NOT EXISTS profMateria (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,8 +44,11 @@ public class UserDAO {
                     FOREIGN KEY (username) REFERENCES user(username)
                 );
                 """;
+
         try (java.sql.Statement statement = getConnection().createStatement()) {
+
             statement.executeUpdate(CREATE_USER_TABLE);
+
             statement.executeUpdate(CREATE_PROF_MATERIA_TABLE);
         } catch (SQLException e) {
             System.out.println("Creazione tabelle User fallita: " + e.getMessage());

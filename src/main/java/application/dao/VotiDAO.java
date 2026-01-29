@@ -34,6 +34,7 @@ public class VotiDAO {
                     FOREIGN KEY (materia) REFERENCES materie(nome)
                 );
                 """;
+
         try (java.sql.Statement statement = getConnection().createStatement()) {
             statement.executeUpdate(CREATE_STUDENTI_VOTI_TABLE);
         } catch (SQLException e) {
