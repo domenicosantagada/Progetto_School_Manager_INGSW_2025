@@ -28,61 +28,49 @@ public class HomeProfController {
     @FXML
     private ImageView logoView;      // Logo dell'applicazione da mostrare nella home
 
-    // Mostra la lista degli studenti associati al professore
-    @FXML
-    public void studentsClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setStudentsListPage();
-    }
 
-    // Apre la sezione dei compiti/assegnazioni
-    @FXML
-    public void assgimentClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setAssignmentPage();
-    }
+    private SceneHandler sh;
+    private Database db;
+    private String usernameProf;
 
-    // Mostra la pagina delle assenze
-    @FXML
-    public void assenzeClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setVotesPage();
-    }
-
-    // Apre la sezione delle consegne degli studenti
-    @FXML
-    public void consegneClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setConsegnePage();
-    }
-
-    // Effettua il logout e torna alla pagina di login
-    @FXML
-    public void logoutClicked(ActionEvent actionEvent) throws IOException {
-        SceneHandler.getInstance().setLoginPage();
-    }
 
     // Inizializza la home del professore con logo, info e scelta della classe
     @FXML
     public void initialize() {
-        // Carica il logo
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        usernameProf = sh.getUsername();
+
+        caricaLogo();
+        caricaInfoProfessore();
+        setupClasseChoiceBox();
+    }
+
+    private void caricaLogo() {
         String imagePath = getClass().getResource("/icon/logo1.png").toExternalForm();
         logoView.setImage(new Image(imagePath));
         logoView.setSmooth(true);
+    }
 
-        String username = SceneHandler.getInstance().getUsername();
+    private void caricaInfoProfessore() {
+        profInfo.setText(db.getFullName(usernameProf).toUpperCase());
+        materiaProf.setText(db.getMateriaProf(usernameProf).toUpperCase());
+    }
 
-        // Imposta nome completo e materia
-        profInfo.setText(Database.getInstance().getFullName(username).toUpperCase());
-        materiaProf.setText(Database.getInstance().getMateriaProf(username).toUpperCase());
-
+    private void setupClasseChoiceBox() {
         // Popola la ChoiceBox con le classi disponibili
-        List<String> classi = Database.getInstance().getAllClassiNames();
+        List<String> classi = db.getAllClassiNames();
         classeChoiceBox.getItems().addAll(classi);
 
         // Imposta la classe corrente
-        String currentClass = Database.getInstance().getClasseUser(username);
+        String currentClass = db.getClasseUser(usernameProf);
         if (currentClass != null && classi.contains(currentClass)) {
             classeChoiceBox.setValue(currentClass);
         } else if (!classi.isEmpty()) {
             classeChoiceBox.setValue(classi.get(0));
-            Database.getInstance().updateClasseUser(username, classi.get(0));
+            db.updateClasseUser(usernameProf, classi.get(0));
         }
 
         // Listener per aggiornare la classe nel database al cambio selezione
@@ -90,10 +78,48 @@ public class HomeProfController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (newValue != null) {
-                    Database.getInstance().updateClasseUser(username, newValue);
+                    db.updateClasseUser(usernameProf, newValue);
                     System.out.println("Classe cambiata a: " + newValue);
                 }
             }
         });
     }
+
+
+
+
+    /*
+    Gestione dei click sui bottoni della home del professore
+     */
+
+    // Mostra la lista degli studenti associati al professore
+    @FXML
+    public void studentsClicked(ActionEvent actionEvent) throws IOException {
+        sh.setStudentsListPage();
+    }
+
+    // Apre la sezione dei compiti/assegnazioni
+    @FXML
+    public void assgimentClicked(ActionEvent actionEvent) throws IOException {
+        sh.setAssignmentPage();
+    }
+
+    // Mostra la pagina delle assenze
+    @FXML
+    public void assenzeClicked(ActionEvent actionEvent) throws IOException {
+        sh.setVotesPage();
+    }
+
+    // Apre la sezione delle consegne degli studenti
+    @FXML
+    public void consegneClicked(ActionEvent actionEvent) throws IOException {
+        sh.setConsegnePage();
+    }
+
+    // Effettua il logout e torna alla pagina di login
+    @FXML
+    public void logoutClicked(ActionEvent actionEvent) throws IOException {
+        sh.setLoginPage();
+    }
+
 }
