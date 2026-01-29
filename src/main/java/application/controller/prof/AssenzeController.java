@@ -216,17 +216,26 @@ public class AssenzeController implements DatabaseObserver {
 
     // Popola la griglia del calendario con giorni e studenti
     private void populateCalendar() {
+
+        // Serve per ricaricare lo stile del css altrimenti non disegna la griglia dopo che viene aggiornato o cambiato il mese
         Scene scene = calendarGrid.getScene();
         if (scene != null) {
             scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         }
 
-        Integer dayOfMonth = mese.lengthOfMonth();
-        //studenti.sort((s1, s2) -> s1.cognome().compareToIgnoreCase(s2.cognome()));
+        calendarGrid.getChildren().clear(); // Inizializza la griglia
+        calendarGrid.getColumnConstraints().clear(); // Inizializza le colonne
+        calendarGrid.getRowConstraints().clear(); // Inizializza le righe
 
-        calendarGrid.getChildren().clear();
-        calendarGrid.getColumnConstraints().clear();
-        calendarGrid.getRowConstraints().clear();
+        setupCplumns(); // Imposta le colonne
+        setupRows(); // Imposta le righe
+
+        addStudendLabels(); // Aggiunge le etichette degli studenti
+        addDayLabels(); // Aggiunge le etichette dei giorni
+    }
+
+    private void setupCplumns() {
+        Integer dayOfMonth = mese.lengthOfMonth();
 
         ColumnConstraints studentColumn = new ColumnConstraints();
         studentColumn.setHgrow(Priority.NEVER);
@@ -239,13 +248,17 @@ public class AssenzeController implements DatabaseObserver {
             dayColumn.setMinWidth(20);
             calendarGrid.getColumnConstraints().add(dayColumn);
         }
+    }
 
+    private void setupRows() {
         for (int i = 0; i < studenti.size() + 1; i++) {
             RowConstraints row = new RowConstraints();
             row.setVgrow(Priority.SOMETIMES);
             calendarGrid.getRowConstraints().add(row);
         }
+    }
 
+    private void addStudendLabels() {
         for (int i = 0; i < studenti.size(); i++) {
             Label studenteLabel = new Label(" " + studenti.get(i).cognome().toUpperCase() + " " + studenti.get(i).nome().toUpperCase());
             studenteLabel.setMaxWidth(Double.MAX_VALUE);
@@ -254,6 +267,10 @@ public class AssenzeController implements DatabaseObserver {
             GridPane.setHalignment(studenteLabel, HPos.CENTER);
             GridPane.setValignment(studenteLabel, VPos.CENTER);
         }
+    }
+
+    private void addDayLabels() {
+        Integer dayOfMonth = mese.lengthOfMonth();
 
         for (int i = 0; i < dayOfMonth; i++) {
             Label giornoLabel = new Label(String.valueOf(i + 1));
