@@ -27,12 +27,29 @@ public class CompitiController implements DatabaseObserver {
 
     private String materia;
     private String classe;
+    private String profUsername;
+
+
+    // Inizializza il controller
+    @FXML
+    public void initialize() {
+        Database.getInstance().attach(this); // Si registra come observer del database
+
+        profUsername = SceneHandler.getInstance().getUsername();
+
+        classe = Database.getInstance().getClasseUser(profUsername);
+        materia = Database.getInstance().getMateriaProf(profUsername);
+
+        // Setup interfaccia
+        classLabel.setText(classe);
+    }
+
 
     // Torna alla homepage del professore
     @FXML
     public void backButtonClicked() throws IOException {
         Database.getInstance().detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi''
-        SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
+        SceneHandler.getInstance().setProfessorHomePage(profUsername);
     }
 
     // Invia un nuovo compito assegnato
@@ -46,10 +63,10 @@ public class CompitiController implements DatabaseObserver {
 
         CompitoAssegnato compito = new CompitoAssegnato(
                 -1,
-                SceneHandler.getInstance().getUsername(),
+                profUsername,
                 materia,
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                compitiAssegnati.getText().toUpperCase(),
+                compitiAssegnati.getText().toUpperCase().trim(),
                 classe);
 
         if (Database.getInstance().insertCompito(compito)) {
@@ -61,14 +78,6 @@ public class CompitiController implements DatabaseObserver {
         }
     }
 
-    // Inizializza il controller
-    @FXML
-    public void initialize() {
-        Database.getInstance().attach(this);
-        classe = Database.getInstance().getClasseUser(SceneHandler.getInstance().getUsername());
-        classLabel.setText(classe);
-        materia = Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername());
-    }
 
     // Gestisce notifiche del database
     @Override
