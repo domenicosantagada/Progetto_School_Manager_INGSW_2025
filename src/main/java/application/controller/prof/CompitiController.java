@@ -31,7 +31,7 @@ public class CompitiController implements DatabaseObserver {
     // Torna alla homepage del professore
     @FXML
     public void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this);
+        Database.getInstance().detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi''
         SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
     }
 
