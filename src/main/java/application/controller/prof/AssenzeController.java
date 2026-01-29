@@ -80,6 +80,11 @@ public class AssenzeController implements DatabaseObserver {
         refreshCalendar(); // Carica il calendario
     }
 
+    /*
+     * =======================
+     * ===== SETUP ===========
+     * =======================
+     */
     private void setupStyleSheet() {
         classLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
@@ -116,102 +121,15 @@ public class AssenzeController implements DatabaseObserver {
     }
 
 
+    /*
+     * =======================
+     * ===== CALENDARIO ======
+     * =======================
+     */
+
     private void refreshCalendar() {
         populateCalendar();
         loadAndRenderAbsences();
-    }
-
-    // Carica le assenze dal database e le mostra nel calendario
-    private void loadAndRenderAbsences() {
-        for (StudenteTable s : studenti) {
-            List<Assenza> assenzeStudente = Database.getInstance().getAssenzeStudente(s.username(), mese.getMonthValue());
-            for (Assenza a : assenzeStudente) {
-                drawAbsenceIndicator(studentToRowMap.get(s), a.giorno(), a.giustificata());
-            }
-        }
-    }
-
-    // Imposta il mese corrente nella label
-    private void updateMonthLabel() {
-        monthLabel.setText(mese.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
-    }
-
-    // Imposta professore, classe e materia
-    private void setProfClasse() {
-        prof = SceneHandler.getInstance().getUsername();
-        classe = Database.getInstance().getClasseUser(prof);
-        materia = Database.getInstance().getMateriaProf(prof);
-        classLabel.setText(classe);
-    }
-
-    // Aggiunge una nuova assenza selezionata
-    @FXML
-    private void aggiungiAssenzaStudente() {
-        try {
-            if (studentChoiceBox.getSelectionModel().isEmpty() || absenceDatePicker.getValue() == null) {
-                SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
-            }
-
-            Integer posizione = studentToRowMap.get(studenti.get(studentChoiceBox.getSelectionModel().getSelectedIndex()));
-            Integer giornoAssenza = absenceDatePicker.getValue().getDayOfMonth();
-            StudenteTable studente = studenti.get(posizione);
-
-            Assenza assenza = new Assenza(studente.username(), giornoAssenza, absenceDatePicker.getValue().getMonthValue(),
-                    absenceDatePicker.getValue().getYear(), "Assenza non giustificata", false);
-
-            Database.getInstance().addAssenza(assenza);
-            drawAbsenceIndicator(posizione, giornoAssenza, false);
-            onCancelAddAbsence();
-
-        } catch (Exception e) {
-            System.out.println("Errore nell'aggiunta dell'assenza");
-        }
-    }
-
-    // Disegna l'indicatore di assenza nella griglia
-    private void drawAbsenceIndicator(Integer posizione, Integer giorno, boolean giustificata) {
-        StackPane cellaColorata = new StackPane();
-        Label testoLabel = new Label();
-        testoLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
-
-        if (giustificata) {
-            cellaColorata.setStyle("-fx-background-color: blue;");
-            testoLabel.setText("G");
-        } else {
-            cellaColorata.setStyle("-fx-background-color: red;");
-            testoLabel.setText("A");
-        }
-
-        cellaColorata.getChildren().add(testoLabel);
-
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteItem = new MenuItem("Elimina Assenza");
-        deleteItem.setOnAction(e -> {
-            StudenteTable studente = studenti.get(posizione);
-            Database.getInstance().deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
-            SceneHandler.getInstance().showInformation("Assenza eliminata correttamente.");
-            calendarGrid.getChildren().remove(cellaColorata);
-        });
-        contextMenu.getItems().add(deleteItem);
-        cellaColorata.setOnContextMenuRequested(e -> contextMenu.show(cellaColorata, e.getScreenX(), e.getScreenY()));
-
-        calendarGrid.add(cellaColorata, giorno, posizione + 1);
-    }
-
-    // Torna alla pagina precedente
-    @FXML
-    private void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this);
-        SceneHandler.getInstance().setProfessorHomePage(prof);
-    }
-
-    // Nasconde il pannello di aggiunta assenza
-    @FXML
-    private void onCancelAddAbsence() {
-        inputPane.setVisible(false);
-        mainPane.setVisible(true);
-        mainPane.setEffect(null);
-        mainPane.setDisable(false);
     }
 
     // Popola la griglia del calendario con giorni e studenti
@@ -232,6 +150,20 @@ public class AssenzeController implements DatabaseObserver {
 
         addStudendLabels(); // Aggiunge le etichette degli studenti
         addDayLabels(); // Aggiunge le etichette dei giorni
+    }
+
+    // Carica le assenze dal database e le mostra nel calendario
+    private void loadAndRenderAbsences() {
+        for (StudenteTable s : studenti) {
+            List<Assenza> assenzeStudente = Database.getInstance().getAssenzeStudente(s.username(), mese.getMonthValue());
+
+            // ordiniamo le assenze dello studente per anno, mese e giorno
+            // assenzeStudente.sort(Comparator.comparingInt(Assenza::anno).thenComparingInt(Assenza::mese).thenComparingInt(Assenza::giorno));
+
+            for (Assenza a : assenzeStudente) {
+                drawAbsenceIndicator(studentToRowMap.get(s), a.giorno(), a.giustificata());
+            }
+        }
     }
 
     private void setupCplumns() {
@@ -281,6 +213,97 @@ public class AssenzeController implements DatabaseObserver {
         }
     }
 
+    // Disegna l'indicatore di assenza nella griglia
+    private void drawAbsenceIndicator(Integer posizione, Integer giorno, boolean giustificata) {
+        StackPane cellaColorata = new StackPane();
+        Label testoLabel = new Label();
+        testoLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+        if (giustificata) {
+            cellaColorata.setStyle("-fx-background-color: blue;");
+            testoLabel.setText("G");
+        } else {
+            cellaColorata.setStyle("-fx-background-color: red;");
+            testoLabel.setText("A");
+        }
+
+        cellaColorata.getChildren().add(testoLabel);
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteItem = new MenuItem("Elimina Assenza");
+        deleteItem.setOnAction(e -> {
+            StudenteTable studente = studenti.get(posizione);
+            Database.getInstance().deleteAssenza(studente.username(), giorno, mese.getMonthValue(), mese.getYear());
+            SceneHandler.getInstance().showInformation("Assenza eliminata correttamente.");
+            calendarGrid.getChildren().remove(cellaColorata);
+        });
+        contextMenu.getItems().add(deleteItem);
+        cellaColorata.setOnContextMenuRequested(e -> contextMenu.show(cellaColorata, e.getScreenX(), e.getScreenY()));
+
+        calendarGrid.add(cellaColorata, giorno, posizione + 1);
+    }
+
+    // Imposta il mese corrente nella label
+    private void updateMonthLabel() {
+        monthLabel.setText(mese.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
+    }
+
+    // Imposta professore, classe e materia
+    private void setProfClasse() {
+        prof = SceneHandler.getInstance().getUsername();
+        classe = Database.getInstance().getClasseUser(prof);
+        materia = Database.getInstance().getMateriaProf(prof);
+        classLabel.setText(classe);
+    }
+
+    // Aggiunge una nuova assenza selezionata
+    @FXML
+    private void aggiungiAssenzaStudente() {
+        try {
+            if (studentChoiceBox.getSelectionModel().isEmpty() || absenceDatePicker.getValue() == null) {
+                SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+            }
+
+            //Integer posizione = studentToRowMap.get(studenti.get(studentChoiceBox.getSelectionModel().getSelectedIndex()));
+            Integer posizione = studentChoiceBox.getSelectionModel().getSelectedIndex();
+            //Integer giornoAssenza = absenceDatePicker.getValue().getDayOfMonth();
+            LocalDate giornoAssenza = absenceDatePicker.getValue();
+            StudenteTable studente = studenti.get(posizione);
+
+            Assenza assenza = new Assenza(
+                    studente.username(),
+                    giornoAssenza.getDayOfMonth(),
+                    giornoAssenza.getMonthValue(),
+                    giornoAssenza.getYear(),
+                    "Assenza non giustificata",
+                    false);
+
+            Database.getInstance().addAssenza(assenza);
+            drawAbsenceIndicator(posizione, giornoAssenza.getDayOfMonth(), false);
+            onCancelAddAbsence();
+
+        } catch (Exception e) {
+            System.out.println("Errore nell'aggiunta dell'assenza");
+            onCancelAddAbsence();
+        }
+    }
+
+    // Torna alla pagina precedente
+    @FXML
+    private void backButtonClicked() throws IOException {
+        Database.getInstance().detach(this); // Rimuove l'observer dal database cosi non riceve piu' eventi'
+        SceneHandler.getInstance().setProfessorHomePage(prof);
+    }
+
+    // Nasconde il pannello di aggiunta assenza
+    @FXML
+    private void onCancelAddAbsence() {
+        inputPane.setVisible(false);
+        mainPane.setVisible(true);
+        mainPane.setEffect(null);
+        mainPane.setDisable(false);
+    }
+
     // Mostra il pannello per aggiungere un'assenza
     @FXML
     public void showAddAssenzaPane() {
@@ -295,7 +318,6 @@ public class AssenzeController implements DatabaseObserver {
     public void mesePrecedente() {
         mese = mese.minusMonths(1);
         updateMonthLabel();
-        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
         populateCalendar();
         loadAndRenderAbsences();
     }
@@ -304,10 +326,16 @@ public class AssenzeController implements DatabaseObserver {
     public void meseSuccessivo() {
         mese = mese.plusMonths(1);
         updateMonthLabel();
-        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
         populateCalendar();
         loadAndRenderAbsences();
     }
+
+
+    /*
+     * =======================
+     * ===== OBSERVER ========
+     * =======================
+     */
 
     // Aggiorna la UI quando il database invia eventi
     @Override
@@ -317,8 +345,7 @@ public class AssenzeController implements DatabaseObserver {
             case ASSENZA_GIUSTIFICATA:
             case ASSENZA_ELIMINATA:
                 Platform.runLater(() -> {
-                    populateCalendar();
-                    loadAndRenderAbsences();
+                    refreshCalendar();
                     System.out.println("Calendario docente aggiornato via Observer: " + event.type());
                 });
                 break;
