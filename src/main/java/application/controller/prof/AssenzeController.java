@@ -18,12 +18,21 @@ import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+/*
+Controller per la gestione delle assenze degli studenti da parte del professore.
+Permette di visualizzare un calendario con le assenze degli studenti e di aggiungerne di nuove.
+ */
 public class AssenzeController implements DatabaseObserver {
 
+    /* =======================
+       ====== FXML ===========
+       ======================= */
     @FXML
     private ChoiceBox<String> studentChoiceBox;
 
@@ -45,12 +54,14 @@ public class AssenzeController implements DatabaseObserver {
     @FXML
     private GridPane calendarGrid;
 
+    /* =======================
+       ====== VARIABILI ======
+       ======================= */
     private String prof;
     private String classe;
     private String materia;
 
     private List<StudenteTable> studenti;
-
     private final Map<StudenteTable, Integer> studentToRowMap = new HashMap<>();
 
     private LocalDate mese;
@@ -58,16 +69,11 @@ public class AssenzeController implements DatabaseObserver {
     // Inizializza il controller
     @FXML
     public void initialize() {
-        Database.getInstance().attach(this);
+        Database.getInstance().attach(this);    // Aggiunge l'observer al database
 
-        classLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-            }
-        });
+        setupStyleSheet();  // Imposta lo stile CSS
+        setupInitialState(); // Imposta lo stato iniziale della UI
 
-        inputPane.setVisible(false);
-        setMeseCorrente();
         setProfClasse();
 
         studenti = Database.getInstance().getStudentiClasse(classe, materia);
@@ -80,6 +86,19 @@ public class AssenzeController implements DatabaseObserver {
         }
 
         loadAndRenderAbsences();
+    }
+
+    private void setupStyleSheet() {
+        classLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            }
+        });
+    }
+
+    private void setupInitialState() {
+        inputPane.setVisible(false);
+        setMeseCorrente();
     }
 
     // Mappa ogni studente alla riga della griglia
@@ -102,7 +121,8 @@ public class AssenzeController implements DatabaseObserver {
     // Imposta il mese corrente nella label
     private void setMeseCorrente() {
         mese = LocalDate.now();
-        monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
+        //monthLabel.setText(meseItaliano(String.valueOf(mese.getMonth())));
+        monthLabel.setText(mese.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN));
     }
 
     // Imposta professore, classe e materia
