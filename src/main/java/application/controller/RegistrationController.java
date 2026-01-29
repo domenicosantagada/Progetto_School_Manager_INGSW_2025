@@ -48,6 +48,33 @@ public class RegistrationController {
     @FXML
     private ImageView logoView;
 
+
+    private SceneHandler sh;
+    private Database db;
+
+
+    // Inizializza la schermata di registrazione
+    public void initialize() {
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        caricaLogo();
+        addListeners();
+
+        // Nascondi campi relativi ai professori
+        materiaChoiceBox.setVisible(false);
+        materiaLabel.setVisible(false);
+
+        setMaterieChoiceBox();
+    }
+
+    private void caricaLogo() {
+        String imagePath = getClass().getResource("/icon/logo.png").toExternalForm();
+        logoView.setImage(new Image(imagePath));
+    }
+
+
     // Registra un nuovo utente studente o professore
     @FXML
     public void registerClicked(ActionEvent actionEvent) throws IOException {
@@ -67,37 +94,36 @@ public class RegistrationController {
         String hashedPassword = BCryptService.hashPassword(password);
 
         // Validazioni principali
-        if (username.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()
-                || codiceIscrizione.isEmpty() || password.isEmpty()) {
-            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+        if (username.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty() || codiceIscrizione.isEmpty() || password.isEmpty()) {
+            sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
         } else if (usernameUtilizzato(username)) {
-            SceneHandler.getInstance().showWarning(MessageDebug.USERNAME_NOT_VALID);
+            sh.showWarning(MessageDebug.USERNAME_NOT_VALID);
         } else if (datePicker.getValue().isAfter(LocalDate.now())) {
-            SceneHandler.getInstance().showWarning(MessageDebug.DATE_NOT_VALID);
+            sh.showWarning(MessageDebug.DATE_NOT_VALID);
         } else if (!password.equals(repeatPasswordField.getText())) {
-            SceneHandler.getInstance().showWarning(MessageDebug.PASSWORD_NOT_MATCH);
+            sh.showWarning(MessageDebug.PASSWORD_NOT_MATCH);
         } else if (password.length() < 4) {
-            SceneHandler.getInstance().showWarning(MessageDebug.PASSWORD_NOT_VALID);
+            sh.showWarning(MessageDebug.PASSWORD_NOT_VALID);
         } else {
             User user = new User(username, nome.toUpperCase(), cognome.toUpperCase(), hashedPassword, dataNascita);
-            TipologiaClasse tipologiaUtente = Database.getInstance().getTipologiaUtente(codiceIscrizione);
+            TipologiaClasse tipologiaUtente = db.getTipologiaUtente(codiceIscrizione);
 
             if (tipologiaUtente == null) {
-                SceneHandler.getInstance().showWarning(MessageDebug.CODE_ERROR);
+                sh.showWarning(MessageDebug.CODE_ERROR);
             } else if (tipologiaUtente.tipologia().equals(STUDENTTYPE)) {
                 Studente studente = new Studente(user, tipologiaUtente.classe());
-                if (Database.getInstance().insertStudente(studente)) {
-                    SceneHandler.getInstance().showInformation(MessageDebug.REGISTRATION_OK);
-                    SceneHandler.getInstance().setLoginPage();
+                if (db.insertStudente(studente)) {
+                    sh.showInformation(MessageDebug.REGISTRATION_OK);
+                    sh.setLoginPage();
                 }
             } else if (tipologiaUtente.tipologia().equals(PROFTYPE)) {
                 if (materia.isEmpty()) {
-                    SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+                    sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
                 } else {
                     Professore professore = new Professore(user, tipologiaUtente.classe(), materia);
-                    if (Database.getInstance().insertProfessore(professore)) {
-                        SceneHandler.getInstance().showInformation(MessageDebug.REGISTRATION_OK);
-                        SceneHandler.getInstance().setLoginPage();
+                    if (db.insertProfessore(professore)) {
+                        sh.showInformation(MessageDebug.REGISTRATION_OK);
+                        sh.setLoginPage();
                     }
                 }
             }
@@ -106,36 +132,23 @@ public class RegistrationController {
 
     // Controlla se uno username è già in uso
     private boolean usernameUtilizzato(String username) {
-        return Database.getInstance().usernameUtilizzato(username);
+        return db.usernameUtilizzato(username);
     }
 
     // Controlla validità del codice di iscrizione
     private boolean codiceIscrizioneValido(String codiceIscrizione) {
-        return Database.getInstance().codiceIscrizioneValido(codiceIscrizione);
+        return db.codiceIscrizioneValido(codiceIscrizione);
     }
 
     // Recupera la tipologia dell'utente dal codice
     private String tipologiaUser(String codiceIscrizione) {
-        return Database.getInstance().tipologiaUser(codiceIscrizione);
+        return db.tipologiaUser(codiceIscrizione);
     }
 
-    // Inizializza la schermata di registrazione
-    public void initialize() {
-        String imagePath = getClass().getResource("/icon/logo.png").toExternalForm();
-        logoView.setImage(new Image(imagePath));
-
-        addListeners();
-
-        // Nascondi campi relativi ai professori
-        materiaChoiceBox.setVisible(false);
-        materiaLabel.setVisible(false);
-
-        setMaterieChoiceBox();
-    }
 
     // Popola la choiceBox delle materie
     private void setMaterieChoiceBox() {
-        List<String> materie = Database.getInstance().getAllMaterieIstituto();
+        List<String> materie = db.getAllMaterieIstituto();
         materiaChoiceBox.getItems().addAll(materie);
     }
 
@@ -191,6 +204,6 @@ public class RegistrationController {
     // Torna alla pagina di login
     @FXML
     public void backButtonClicked(MouseEvent mouseEvent) throws IOException {
-        SceneHandler.getInstance().setLoginPage();
+        sh.setLoginPage();
     }
 }
