@@ -36,33 +36,46 @@ public class CompitiController {
     @FXML
     private TextArea commentoArea;
 
-    private String studente;
-    private String classe;
+    private String usernameStudente, classe;
     private List<CompitoAssegnato> compiti;
     private CompitoAssegnato selectedCompito;
     private File selectedFile;
 
+
+    private SceneHandler sh;
+    private Database db;
+
     // Inizializza controller: imposta classe, carica compiti e nasconde pannello elaborato
     @FXML
     public void initialize() {
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        usernameStudente = sh.getUsername();
+
+
         caricaElaboratoPane.setVisible(false);
-        studente = SceneHandler.getInstance().getUsername();
-        classe = Database.getInstance().getClasseUser(studente);
+
+        classe = db.getClasseUser(usernameStudente);
         classeLabel.setText(classe.toUpperCase());
 
-        compiti = Database.getInstance().getCompitiClasse(classe);
+        compiti = db.getCompitiClasse(classe);
         visualizzaCompiti();
     }
 
     // Torna alla home dello studente
     @FXML
     public void backButtonClicked() throws IOException {
-        SceneHandler.getInstance().setStudentHomePage(studente);
+        sh.setStudentHomePage(usernameStudente);
     }
 
     // Visualizza i compiti assegnati nel container
     private void visualizzaCompiti() {
+
+        // Pulisce il container prima di aggiungere nuovi compiti
         compitiContainer.getChildren().clear();
+
         if (compiti != null && !compiti.isEmpty()) {
             for (CompitoAssegnato comp : compiti) {
                 generaLabel(comp);
@@ -72,12 +85,16 @@ public class CompitiController {
 
     // Genera il BorderPane cliccabile per ogni compito
     private void generaLabel(CompitoAssegnato comp) {
+
+        // Crea BorderPane per il compito
         BorderPane newBorderPane = new BorderPane();
 
+        // Crea etichette per materia, descrizione e data
         Label materia = new Label(comp.materia().toUpperCase());
         Label message = new Label(comp.descrizione());
         Label date = new Label(comp.data());
 
+        // Imposta le etichette nel BorderPane
         newBorderPane.setTop(materia);
         newBorderPane.setCenter(message);
         newBorderPane.setBottom(date);
@@ -85,6 +102,7 @@ public class CompitiController {
         newBorderPane.setAlignment(message, Pos.CENTER);
         newBorderPane.setAlignment(date, Pos.CENTER);
 
+        // Aggiunge stili CSS
         newBorderPane.getStyleClass().add("compitiPane");
         newBorderPane.setStyle("-fx-cursor: hand;");
 
@@ -114,11 +132,13 @@ public class CompitiController {
 
     // Carica gli elaborati già inviati dallo studente per il compito selezionato
     private void caricaElaboratiEsistenti(CompitoAssegnato comp) {
+
         elaboratiContainer.getChildren().clear();
-        List<ElaboratoCaricato> elaborati = Database.getInstance().getElaboratiCompito(comp.id());
+
+        List<ElaboratoCaricato> elaborati = db.getElaboratiCompito(comp.id());
 
         elaborati.stream()
-                .filter(e -> e.studente().equals(studente))
+                .filter(e -> e.studente().equals(usernameStudente))
                 .forEach(elaborato -> {
                     BorderPane elPane = new BorderPane();
                     elPane.setStyle("-fx-background-color: #f9f9f9; -fx-padding: 5; -fx-border-color: #ddd; -fx-border-radius: 3;");
@@ -134,11 +154,11 @@ public class CompitiController {
                     javafx.scene.control.Button eliminaBtn = new javafx.scene.control.Button("Elimina");
                     eliminaBtn.setStyle("-fx-background-color: #ffcccc;");
                     eliminaBtn.setOnAction(e -> {
-                        if (Database.getInstance().deleteElaborato(elaborato.id())) {
-                            SceneHandler.getInstance().showInformation("Elaborato eliminato.");
+                        if (db.deleteElaborato(elaborato.id())) {
+                            sh.showInformation("Elaborato eliminato.");
                             caricaElaboratiEsistenti(comp);
                         } else {
-                            SceneHandler.getInstance().showWarning("Errore durante l'eliminazione.");
+                            sh.showWarning("Errore durante l'eliminazione.");
                         }
                     });
 
@@ -164,9 +184,9 @@ public class CompitiController {
         if (file != null) {
             try (java.io.FileOutputStream fos = new java.io.FileOutputStream(file)) {
                 fos.write(elaborato.file());
-                SceneHandler.getInstance().showInformation("File salvato: " + file.getAbsolutePath());
+                sh.showInformation("File salvato: " + file.getAbsolutePath());
             } catch (IOException e) {
-                SceneHandler.getInstance().showWarning("Errore salvataggio: " + e.getMessage());
+                sh.showWarning("Errore salvataggio: " + e.getMessage());
             }
         }
     }
@@ -203,7 +223,7 @@ public class CompitiController {
     @FXML
     public void inviaElaboratoClicked(ActionEvent actionEvent) {
         if (selectedFile == null) {
-            SceneHandler.getInstance().showWarning("Devi selezionare un file PDF per l'elaborato.");
+            sh.showWarning("Devi selezionare un file PDF per l'elaborato.");
             return;
         }
 
@@ -212,17 +232,17 @@ public class CompitiController {
             String commento = commentoArea.getText();
             String data = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            ElaboratoCaricato elaborato = new ElaboratoCaricato(selectedCompito, studente, data, commento, fileContent);
+            ElaboratoCaricato elaborato = new ElaboratoCaricato(selectedCompito, usernameStudente, data, commento, fileContent);
 
-            if (Database.getInstance().insertElaborato(elaborato)) {
-                SceneHandler.getInstance().showInformation("Elaborato inviato con successo!");
+            if (db.insertElaborato(elaborato)) {
+                sh.showInformation("Elaborato inviato con successo!");
                 backFromCaricaElaboratoClicked(null);
             } else {
-                SceneHandler.getInstance().showWarning("Errore durante l'invio dell'elaborato.");
+                sh.showWarning("Errore durante l'invio dell'elaborato.");
             }
 
         } catch (IOException e) {
-            SceneHandler.getInstance().showWarning("Errore durante la lettura del file: " + e.getMessage());
+            sh.showWarning("Errore durante la lettura del file: " + e.getMessage());
         }
     }
 }
