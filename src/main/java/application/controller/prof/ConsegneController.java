@@ -22,6 +22,8 @@ public class ConsegneController {
 
     private String prof;
     private String classe;
+    private Database db;
+    private SceneHandler sh;
 
     @FXML
     private VBox consegneContainer;
@@ -29,25 +31,26 @@ public class ConsegneController {
     @FXML
     private Label classeLabel;
 
-    // Torna alla homepage del professore
-    @FXML
-    public void backButtonClicked() throws IOException {
-        SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
-    }
 
     // Inizializza il controller e mostra i compiti
     @FXML
     public void initialize() {
-        prof = SceneHandler.getInstance().getUsername();
-        classe = Database.getInstance().getClasseUser(prof);
+
+        db = Database.getInstance();
+        sh = SceneHandler.getInstance();
+
+        prof = sh.getUsername();
+        classe = db.getClasseUser(prof);
         classeLabel.setText(classe.toUpperCase());
         visualizzaCompiti();
     }
 
     // Mostra i compiti assegnati dal professore corrente
     private void visualizzaCompiti() {
-        List<CompitoAssegnato> compiti = Database.getInstance().getCompitiClasse(classe);
-        consegneContainer.getChildren().clear();
+
+        List<CompitoAssegnato> compiti = db.getCompitiClasse(classe); // Ottiene tutti i compiti per la classe
+
+        consegneContainer.getChildren().clear(); // Pulisce il container prima di aggiungere nuovi compiti
 
         for (CompitoAssegnato compito : compiti) {
             if (compito.prof().equals(prof)) {
@@ -56,9 +59,18 @@ public class ConsegneController {
         }
     }
 
+
+    // Torna alla homepage del professore
+    @FXML
+    public void backButtonClicked() throws IOException {
+        sh.setProfessorHomePage(SceneHandler.getInstance().getUsername());
+    }
+
+
     // Crea un pannello per un compito con gestione click e context menu
     private void generaLabel(CompitoAssegnato comp) {
         BorderPane newBorderPane = new BorderPane();
+
         Label materia = new Label(comp.materia().toUpperCase());
         Label message = new Label(comp.descrizione());
         Label date = new Label(comp.data());
@@ -66,6 +78,7 @@ public class ConsegneController {
         newBorderPane.setTop(materia);
         newBorderPane.setCenter(message);
         newBorderPane.setBottom(date);
+
         newBorderPane.setAlignment(materia, Pos.CENTER);
         newBorderPane.setAlignment(date, Pos.CENTER);
         newBorderPane.setAlignment(message, Pos.CENTER);
@@ -99,14 +112,14 @@ public class ConsegneController {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem deleteItem = new MenuItem("Elimina Compito");
         deleteItem.setOnAction(e -> {
-            if (Database.getInstance().hasElaboratiForCompito(comp.id())) {
-                SceneHandler.getInstance().showWarning("Impossibile eliminare: ci sono elaborati consegnati.");
+            if (db.hasElaboratiForCompito(comp.id())) {
+                sh.showWarning("Impossibile eliminare: ci sono elaborati consegnati.");
             } else {
-                if (Database.getInstance().deleteCompito(comp.id())) {
-                    SceneHandler.getInstance().showInformation("Compito eliminato correttamente.");
+                if (db.deleteCompito(comp.id())) {
+                    sh.showInformation("Compito eliminato correttamente.");
                     visualizzaCompiti();
                 } else {
-                    SceneHandler.getInstance().showWarning("Errore durante l'eliminazione del compito.");
+                    sh.showWarning("Errore durante l'eliminazione del compito.");
                 }
             }
         });
@@ -120,7 +133,7 @@ public class ConsegneController {
     // Mostra gli elaborati caricati per un compito
     private void mostraElaborati(CompitoAssegnato compito, VBox container) {
         container.getChildren().clear();
-        List<ElaboratoCaricato> elaborati = Database.getInstance().getElaboratiCompito(compito.id());
+        List<ElaboratoCaricato> elaborati = db.getElaboratiCompito(compito.id());
 
         if (elaborati.isEmpty()) {
             container.getChildren().add(new Label("Nessun elaborato consegnato."));
@@ -131,7 +144,7 @@ public class ConsegneController {
             BorderPane elPane = new BorderPane();
             elPane.setStyle("-fx-background-color: #f0f0f0; -fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5;");
 
-            Label studenteLbl = new Label("Studente: " + Database.getInstance().getFullName(elaborato.studente()));
+            Label studenteLbl = new Label("Studente: " + db.getFullName(elaborato.studente()));
             Label dataLbl = new Label("Data: " + elaborato.data());
             Label commentoLbl = new Label("Commento: " + (elaborato.commento() != null ? elaborato.commento() : ""));
 
@@ -149,7 +162,7 @@ public class ConsegneController {
 
     // Scarica il PDF dell'elaborato selezionato
     private void scaricaPDF(ElaboratoCaricato elaborato) {
-        String nomeStudente = Database.getInstance().getFullName(elaborato.studente());
+        String nomeStudente = db.getFullName(elaborato.studente());
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salva Elaborato PDF");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File PDF", "*.pdf"));
@@ -159,9 +172,9 @@ public class ConsegneController {
         if (file != null) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(elaborato.file());
-                SceneHandler.getInstance().showInformation("File salvato correttamente in: " + file.getAbsolutePath());
+                sh.showInformation("File salvato correttamente in: " + file.getAbsolutePath());
             } catch (IOException e) {
-                SceneHandler.getInstance().showWarning("Errore durante il salvataggio del file: " + e.getMessage());
+                sh.showWarning("Errore durante il salvataggio del file: " + e.getMessage());
                 e.printStackTrace();
             }
         }
