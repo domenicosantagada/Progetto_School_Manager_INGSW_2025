@@ -14,7 +14,7 @@ import java.util.List;
 
 public class NoteController {
 
-    private String studente;              // Username dello studente loggato
+    private String usernameStudente;              // Username dello studente loggato
     private String classe;                // Classe dello studente
     private List<Nota> noteStudente = null; // Lista delle note disciplinari dello studente
 
@@ -25,6 +25,11 @@ public class NoteController {
     @FXML
     private Label classeStudente;         // Etichetta per la classe dello studente
 
+
+    private SceneHandler sh;
+    private Database db;
+
+
     // Metodo per tornare alla home dello studente
     @FXML
     public void backButtonClicked() throws IOException {
@@ -34,13 +39,16 @@ public class NoteController {
     // Inizializza la pagina delle note disciplinari
     @FXML
     public void initialize() {
-        // Recupera informazioni dello studente
-        studente = SceneHandler.getInstance().getUsername();
-        classe = Database.getInstance().getClasseUser(studente);
-        noteStudente = Database.getInstance().getNoteStudente(studente);
+
+        sh = SceneHandler.getInstance();
+        db = Database.getInstance();
+
+        usernameStudente = sh.getUsername();
+        classe = db.getClasseUser(usernameStudente);
+        noteStudente = db.getNoteStudente(usernameStudente);
 
         // Imposta nome e classe nella UI
-        nominativoStudente.setText(Database.getInstance().getFullName(studente).toUpperCase());
+        nominativoStudente.setText(db.getFullName(usernameStudente).toUpperCase());
         classeStudente.setText(classe.toUpperCase());
 
         // Visualizza le note disciplinari nella UI
