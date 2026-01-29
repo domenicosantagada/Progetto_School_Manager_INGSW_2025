@@ -38,6 +38,10 @@ public class StudentiController implements DatabaseObserver {
     private final ExportContext exportContext = ExportContext.getInstance();
     private StudenteTable studenteSelezionato;
 
+    private Database db;
+    private SceneHandler sh;
+    private String usernameProf, classeProf, materiaProf;
+
     @FXML
     private Label nominativoStudenteVotoPane, classeLabel, totalStudentsLabel, insufficientLabel, sufficientLabel, nominativoStudenteLabel;
 
@@ -56,12 +60,69 @@ public class StudentiController implements DatabaseObserver {
     @FXML
     private TextField notaField, votoField;
 
+
+    // Inizializza il controller e carica studenti e statistiche
+    public void initialize() {
+
+        db = Database.getInstance();
+        sh = SceneHandler.getInstance();
+        usernameProf = sh.getUsername();
+        classeProf = db.getClasseUser(usernameProf);
+        materiaProf = db.getMateriaProf(usernameProf);
+
+
+        db.attach(this); // Si registra come observer del database
+
+        classeLabel.setText(classeProf);
+        studentiList = db.getStudentiClasse(classeProf, materiaProf);
+
+        aggiornaNumeroStudenti();
+        aggiornaAndamentoClasse();
+        setValueFactory();
+        studentiTableView.setItems(studenti);
+    }
+
+    // Aggiorna il numero totale di studenti
+    private void aggiornaNumeroStudenti() {
+        totalStudentsLabel.setText(String.valueOf(studentiList.size()));
+    }
+
+    // Aggiorna il numero di insufficienti e sufficienti
+    private void aggiornaAndamentoClasse() {
+        int insufficienti = 0;
+        int sufficienti = 0;
+        for (StudenteTable studente : studentiList) {
+            if (studente.voto() < 6) insufficienti++;
+            else sufficienti++;
+        }
+        insufficientLabel.setText(String.valueOf(insufficienti));
+        sufficientLabel.setText(String.valueOf(sufficienti));
+    }
+
+
+    // Configura le colonne della tabella
+    private void setValueFactory() {
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nome().toUpperCase()));
+        surnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().cognome().toUpperCase()));
+        dataValutazioneColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().dataValutazione()));
+        voteColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().voto()).asObject());
+        setStudents(studentiList);
+    }
+
+    // Aggiorna la lista degli studenti nella tabella
+    private void setStudents(List<StudenteTable> studentiList) {
+        studenti.clear();
+        studenti.addAll(studentiList);
+        studentiTableView.refresh();
+    }
+
+
     // Mostra il pannello per aggiungere una nota
     @FXML
     private void showNotePaneClicked() {
         studenteSelezionato = studentiTableView.getSelectionModel().getSelectedItem();
         if (studenteSelezionato == null) {
-            SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
+            sh.showWarning(MessageDebug.STUDENT_NOT_SELECTED);
         } else {
             addNotaPane.setVisible(true);
             nominativoStudenteLabel.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
@@ -75,17 +136,17 @@ public class StudentiController implements DatabaseObserver {
     private void addNotaClicked() {
         String nota = notaField.getText();
         if (nota.trim().isEmpty()) {
-            SceneHandler.getInstance().showWarning(MessageDebug.CAMPS_NOT_EMPTY);
+            sh.showWarning(MessageDebug.CAMPS_NOT_EMPTY);
             notaField.clear();
         } else {
-            Nota notaDB = new Nota(studenteSelezionato.username(), SceneHandler.getInstance().getUsername(),
+            Nota notaDB = new Nota(studenteSelezionato.username(), usernameProf,
                     nota.toUpperCase(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            if (Database.getInstance().insertNota(notaDB)) {
-                SceneHandler.getInstance().showInformation(MessageDebug.NOTE_ADDED);
+            if (db.insertNota(notaDB)) {
+                sh.showInformation(MessageDebug.NOTE_ADDED);
                 notaField.clear();
                 backNoteClicked();
             } else {
-                SceneHandler.getInstance().showWarning(MessageDebug.ERROR_NOTE_ADD);
+                sh.showWarning(MessageDebug.ERROR_NOTE_ADD);
             }
         }
     }
@@ -96,24 +157,24 @@ public class StudentiController implements DatabaseObserver {
         try {
             Integer newVoto = Integer.parseInt(votoField.getText());
             if (newVoto < 0 || newVoto > 10) {
-                SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
+                sh.showWarning(MessageDebug.VOTO_NOT_VALID);
             } else {
                 ValutazioneStudente valutazione = new ValutazioneStudente(
                         studenteSelezionato.username(),
-                        SceneHandler.getInstance().getUsername(),
-                        Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername()),
+                        usernameProf,
+                        materiaProf,
                         LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         newVoto);
-                if (Database.getInstance().updateVoto(valutazione)) {
-                    SceneHandler.getInstance().showInformation(MessageDebug.VOTO_UPDATED);
+                if (db.updateVoto(valutazione)) {
+                    sh.showInformation(MessageDebug.VOTO_UPDATED);
                     votoField.clear();
                     backVoteClickedVotoPane();
                 } else {
-                    SceneHandler.getInstance().showWarning(MessageDebug.ERROR_VOTO_UPDATE);
+                    sh.showWarning(MessageDebug.ERROR_VOTO_UPDATE);
                 }
             }
         } catch (NumberFormatException e) {
-            SceneHandler.getInstance().showWarning(MessageDebug.VOTO_NOT_VALID);
+            sh.showWarning(MessageDebug.VOTO_NOT_VALID);
         }
     }
 
@@ -136,62 +197,16 @@ public class StudentiController implements DatabaseObserver {
     // Torna alla home del professore e rimuove l'observer
     @FXML
     private void backButtonClicked() throws IOException {
-        Database.getInstance().detach(this);
-        SceneHandler.getInstance().setProfessorHomePage(SceneHandler.getInstance().getUsername());
+        db.detach(this);
+        sh.setProfessorHomePage(usernameProf);
     }
 
-    // Inizializza il controller e carica studenti e statistiche
-    public void initialize() {
-        Database.getInstance().attach(this);
-
-        classeLabel.setText(Database.getInstance().getClasseUser(SceneHandler.getInstance().getUsername()));
-        studentiList = Database.getInstance().getStudentiClasse(classeLabel.getText(),
-                Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername()));
-
-        aggiornaNumeroStudenti();
-        aggiornaAndamentoClasse();
-        setValueFactory();
-        studentiTableView.setItems(studenti);
-    }
-
-    // Aggiorna il numero di insufficienti e sufficienti
-    private void aggiornaAndamentoClasse() {
-        int insufficienti = 0;
-        int sufficienti = 0;
-        for (StudenteTable studente : studentiList) {
-            if (studente.voto() < 6) insufficienti++;
-            else sufficienti++;
-        }
-        insufficientLabel.setText(String.valueOf(insufficienti));
-        sufficientLabel.setText(String.valueOf(sufficienti));
-    }
-
-    // Aggiorna il numero totale di studenti
-    private void aggiornaNumeroStudenti() {
-        totalStudentsLabel.setText(String.valueOf(studentiList.size()));
-    }
-
-    // Configura le colonne della tabella
-    private void setValueFactory() {
-        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nome().toUpperCase()));
-        surnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().cognome().toUpperCase()));
-        dataValutazioneColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().dataValutazione()));
-        voteColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().voto()).asObject());
-        setStudents(studentiList);
-    }
-
-    // Aggiorna la lista degli studenti nella tabella
-    private void setStudents(List<StudenteTable> studentiList) {
-        studenti.clear();
-        studenti.addAll(studentiList);
-        studentiTableView.refresh();
-    }
 
     // Mostra il pannello di aggiunta voto
     public void showVotoPageClicked(ActionEvent actionEvent) {
         studenteSelezionato = studentiTableView.getSelectionModel().getSelectedItem();
         if (studenteSelezionato == null) {
-            SceneHandler.getInstance().showWarning(MessageDebug.STUDENT_NOT_SELECTED);
+            sh.showWarning(MessageDebug.STUDENT_NOT_SELECTED);
         } else {
             addVotoPane.setVisible(true);
             nominativoStudenteVotoPane.setText(studenteSelezionato.cognome().toUpperCase() + " " + studenteSelezionato.nome().toUpperCase());
@@ -206,13 +221,12 @@ public class StudentiController implements DatabaseObserver {
         if (event.type() == DatabaseEventType.VOTO_AGGIORNATO || event.type() == DatabaseEventType.NOTA_INSERITA) {
             System.out.println("StudentiController: ricevuto evento " + event.type());
             javafx.application.Platform.runLater(() -> {
-                studentiList = Database.getInstance().getStudentiClasse(
-                        classeLabel.getText(),
-                        Database.getInstance().getMateriaProf(SceneHandler.getInstance().getUsername())
-                );
+                studentiList = db.getStudentiClasse(classeProf, materiaProf);
+
                 aggiornaNumeroStudenti();
                 aggiornaAndamentoClasse();
                 setStudents(studentiList);
+
                 System.out.println("Lista studenti e statistiche aggiornate correttamente.");
             });
         }
