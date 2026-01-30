@@ -188,4 +188,26 @@ public class CompitiDAO {
             throw new RuntimeException("Errore durante l'eliminazione dell'elaborato: " + e.getMessage(), e);
         }
     }
+
+    // Elimiina tutti i compiti di una materia specifica
+    public boolean deleteCompitiByMateria(String materia) {
+        String query = "DELETE FROM compiti WHERE materia = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, materia);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione dei compiti per materia: " + e.getMessage(), e);
+        }
+    }
+
+    // Elimina tutti gli elaborati di uno studente specifico
+    public boolean deleteElaboratiByStudente(String studente) {
+        String query = "DELETE FROM elaboratiCaricati WHERE studente = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, studente);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione degli elaborati per studente: " + e.getMessage(), e);
+        }
+    }
 }

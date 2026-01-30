@@ -300,4 +300,19 @@ public class Database implements DatabaseSubject {
             observer.update(event); // Chiamata al metodo update dell'interfaccia
         }
     }
+
+//    // Elimina tutti i compiti di una materia specifica
+//    public boolean deleteCompitiByMateria(String materia) {
+//        return compitiDAO.deleteCompitiByMateria(materia);
+//    }
+//
+//    // Elimina tutti gli elaborati di uno studente specifico
+//    public boolean deleteElaboratiByStudente(String studente) {
+//        return compitiDAO.deleteElaboratiByStudente(studente);
+//    }
+
+//    // voglio modificare la password di un utente
+//    public boolean updatePassword(String username, String newPassword) {
+//        return userDAO.updatePassword(username, newPassword);
+//    }
 }

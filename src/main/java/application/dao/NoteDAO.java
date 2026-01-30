@@ -76,4 +76,29 @@ public class NoteDAO {
         }
         return note;
     }
+
+    // Elimiina tutte le note di uno studente
+    public boolean deleteNoteStudente(String studente) {
+        String query = "DELETE FROM note WHERE studente = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, studente);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    // Elimina tutte le note inserite da un professore
+    public boolean deleteNoteProfessore(String professore) {
+        String query = "DELETE FROM note WHERE professore = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, professore);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

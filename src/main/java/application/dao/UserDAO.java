@@ -131,7 +131,7 @@ public class UserDAO {
         try (PreparedStatement statement = getConnection().prepareStatement(query)) {
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
+            if (resultSet.next()) { // Se l'utente esiste (next ritorna true se c'è una riga)
                 return resultSet.getString("tipo");
             }
         } catch (SQLException e) {
@@ -211,4 +211,17 @@ public class UserDAO {
             throw new RuntimeException(e);
         }
     }
+    
+//    // modificare password di un utente
+//    public boolean updatePasswordUser(String username, String newPassword) {
+//        String query = "UPDATE user SET password = ? WHERE username = ?";
+//        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+//            String hashedPassword = BCryptService.hashPassword(newPassword);
+//            statement.setString(1, hashedPassword);
+//            statement.setString(2, username);
+//            return statement.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

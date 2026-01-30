@@ -130,4 +130,45 @@ public class VotiDAO {
         }
         return voti;
     }
+
+    // Elimina tutti i voti associati a uno studente
+    public void deleteVotiStudente(String studente) {
+        String query = "DELETE FROM studentiVoti WHERE studente = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, studente);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Elimina tutti i voti associati a una materia (o professore che la insegna)
+    public void deleteVotiMateria(String materia) {
+        String query = "DELETE FROM studentiVoti WHERE materia = ?";
+
+        // oppure se si vuole eliminare per professore:
+        // String query = """
+        //     DELETE FROM studentiVoti
+        //     WHERE materia IN (
+        //         SELECT materia FROM profMateria WHERE username = ?
+        //     );
+        // """;
+
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, materia);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Elimina tutti i voti registrati (tutti gli studenti e materie)
+    public void deleteAllVoti() {
+        String query = "DELETE FROM studentiVoti";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

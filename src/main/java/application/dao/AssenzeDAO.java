@@ -146,4 +146,15 @@ public class AssenzeDAO {
             throw new RuntimeException("Errore durante l'eliminazione dell'assenza: " + e.getMessage(), e);
         }
     }
+
+    // elimina tutte le assenze di uno studente
+    public void deleteAssenzeStudente(String studente) {
+        String query = "DELETE FROM assenze WHERE studente = ?";
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, studente);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione delle assenze dello studente: " + e.getMessage(), e);
+        }
+    }
 }

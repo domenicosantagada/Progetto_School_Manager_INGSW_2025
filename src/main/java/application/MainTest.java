@@ -8,6 +8,7 @@ public class MainTest {
 
         System.out.println(db.getAllMaterieIstituto());
 
+//        System.out.println(db.deleteElaboratiByStudente("stud4"));
 
     }
 }
