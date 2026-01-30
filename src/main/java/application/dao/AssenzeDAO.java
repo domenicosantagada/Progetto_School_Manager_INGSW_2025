@@ -157,4 +157,52 @@ public class AssenzeDAO {
             throw new RuntimeException("Errore durante l'eliminazione delle assenze dello studente: " + e.getMessage(), e);
         }
     }
+
+    // Giustifica tutte le assenze di uno studente
+    public void justifyAllAssenzeStudente(String studente, String motivazione) {
+        String query = """
+                UPDATE assenze
+                SET motivazione = ?, giustificata = 1
+                WHERE studente = ?
+                """;
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, motivazione);
+            statement.setString(2, studente);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Giustifica tutte le assenze degli studenti di una classe specifica
+    public void justifyAllAssenzeClasse(String classe, String motivazione) {
+        String query = """
+                UPDATE assenze
+                SET motivazione = ?, giustificata = 1
+                WHERE studente IN (
+                    SELECT username FROM user WHERE classe = ?
+                )
+                """;
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, motivazione);
+            statement.setString(2, classe);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Giustifica tutte le assenze di tutti gli studenti
+    public void justifyAllAssenze(String motivazione) {
+        String query = """
+                UPDATE assenze
+                SET motivazione = ?, giustificata = 1
+                """;
+        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
+            statement.setString(1, motivazione);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
